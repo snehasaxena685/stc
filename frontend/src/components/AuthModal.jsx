@@ -1,53 +1,170 @@
-// src/components/AuthModal.jsx
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 
-export default function AuthModal({ mode = "login", onClose, onSwitch, onLogin, onRegister }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function AuthModal({
+  isOpen,
+  mode,
+  onClose,
 
-  function submit(e) {
-    e.preventDefault();
-    if (mode === "register") {
-      if (!name || !email || !password) return alert("All fields required");
-      onRegister({ name, email, password });
-    } else {
-      if (!email || !password) return alert("Email & password required");
-      onLogin({ email, password });
-    }
-  }
+  /* LOGIN */
+  loginEmail,
+  loginPassword,
+  setLoginEmail,
+  setLoginPassword,
+  handleLogin,
+
+  /* REGISTER */
+  fullName,
+  regEmail,
+  regPassword,
+  confirmPassword,
+  address,
+  phone,
+  nationality,
+
+  setFullName,
+  setRegEmail,
+  setRegPassword,
+  setConfirmPassword,
+  setAddress,
+  setPhone,
+  setNationality,
+
+  handleRegister,
+  switchToRegister,
+  switchToLogin,
+}) {
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
-        <div className="flex justify-between items-center mb-2">
-          <div className="text-lg font-semibold text-gov-green">{mode === "login" ? "Login" : "Register"}</div>
-          <button onClick={onClose} className="text-slate-600">✖</button>
+    <div className="glass-modal-bg" style={{ display: "flex" }}>
+      <div className="glass-modal open relative">
+
+        <button className="modal-close-btn" onClick={onClose}>×</button>
+
+        {/* LEFT SECTION */}
+        <div className="glass-left">
+          <img src="/images/logo1.jpeg" className="w-20 rounded bg-white p-2" />
+          <h2>CSIR-CFTRI STC Portal</h2>
+          <p>Login to apply for trainings, manage your profile and more.</p>
+          <div className="text-sm opacity-80">Secure login • Govt Certified</div>
         </div>
 
-        <form onSubmit={submit} className="space-y-3">
-          {mode === "register" && (
-            <div>
-              <label className="text-xs text-slate-600">Full name</label>
-              <input value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 px-3 py-2 border rounded" placeholder="Your full name" />
-            </div>
+        {/* RIGHT SECTION */}
+        <div className="glass-right">
+
+          {/* LOGIN FORM */}
+          {mode === "login" && (
+            <>
+              <h3 className="text-lg font-semibold text-[var(--g1)] mb-4">Login</h3>
+
+              <input
+                className="input-field mb-3"
+                placeholder="Email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+              />
+
+              <input
+                className="input-field mb-4"
+                type="password"
+                placeholder="Password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+              />
+
+              <button
+                className="w-full py-2 bg-[var(--g2)] text-white rounded font-semibold"
+                onClick={handleLogin}
+              >
+                Sign In
+              </button>
+
+              <p className="text-sm mt-4">
+                New here?{" "}
+                <button className="text-[var(--g2)] font-semibold" onClick={switchToRegister}>
+                  Create an account
+                </button>
+              </p>
+            </>
           )}
 
-          <div>
-            <label className="text-xs text-slate-600">Email</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} className="w-full mt-1 px-3 py-2 border rounded" placeholder="you@example.com" />
-          </div>
+          {/* REGISTER FORM */}
+          {mode === "register" && (
+            <>
+              <h3 className="text-lg font-semibold text-[var(--g1)] mb-4">Register</h3>
 
-          <div>
-            <label className="text-xs text-slate-600">Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full mt-1 px-3 py-2 border rounded" placeholder="••••••" />
-          </div>
+              <input
+                className="input-field mb-3"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
 
-          <div className="flex items-center justify-between">
-            <button type="submit" className="px-4 py-2 rounded bg-gov-green text-white">{mode === "login" ? "Login" : "Create account"}</button>
-            <button type="button" onClick={onSwitch} className="text-sm text-gov-green underline">{mode === "login" ? "Create account" : "Already have an account? Login"}</button>
-          </div>
-        </form>
+              <input
+                className="input-field mb-3"
+                placeholder="Email"
+                value={regEmail}
+                onChange={(e) => setRegEmail(e.target.value)}
+              />
+
+              <input
+                className="input-field mb-3"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+
+              <input
+                className="input-field mb-3"
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+
+              <input
+                className="input-field mb-3"
+                placeholder="Nationality"
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+              />
+
+              <input
+                className="input-field mb-3"
+                type="password"
+                placeholder="Password"
+                value={regPassword}
+                onChange={(e) => setRegPassword(e.target.value)}
+              />
+
+              <input
+                className="input-field mb-4"
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+
+              <button
+                className="w-full py-2 bg-[var(--g1)] text-white rounded font-semibold"
+                onClick={handleRegister}
+              >
+                Register
+              </button>
+
+              <p className="text-sm mt-4">
+                Already registered?{" "}
+                <button className="text-[var(--g1)] font-semibold" onClick={switchToLogin}>
+                  Login
+                </button>
+              </p>
+            </>
+          )}
+
+        </div>
       </div>
     </div>
   );
