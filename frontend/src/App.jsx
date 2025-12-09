@@ -63,6 +63,97 @@ body {
   transform: none;
 }
 
+/* --------- SOFT ZOOM SPLASH FOR MODALS (A1) --------- */
+@keyframes softZoomFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes overlayFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ============ TOASTS (Option A – clean gov theme) ============ */
+.toast-container {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 9px 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+  animation: toastSlideIn 0.35s ease-out;
+  border-left: 4px solid #10b981;
+  color: #022c22;
+}
+
+.toast-icon {
+  font-size: 16px;
+  margin-top: 1px;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.toast-message {
+  font-size: 12px;
+}
+
+.toast-success {
+  border-left-color: #10b981;
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+}
+
+.toast-error .toast-title {
+  color: #b91c1c;
+}
+
+.toast-success .toast-title {
+  color: #065f46;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
 /* TYPO UTILS (simple) */
 .text-lg { font-size: 1.05rem; }
 .text-base { font-size: 0.95rem; }
@@ -245,7 +336,7 @@ body {
 .hero-shell {
   max-width: 1200px;
   margin: 18px auto 0;
-  padding: 22px 18px 26px;
+  padding: 22px 18px 14px;   /* ↓ LESS bottom space */
   border-radius: 0 0 30px 30px;
   background: linear-gradient(135deg, var(--hero1), var(--hero2));
   color: #fefdfb;
@@ -396,7 +487,7 @@ body {
 
 /* UPCOMING TRAININGS STRIP */
 .upcoming-strip {
-  margin-top: 16px;
+ margin-top: -4px;  /* pulled a bit closer to hero */
   border-radius: 26px;
   background: radial-gradient(circle at top left,#f7f9ef 0,#edf3dd 40%,#f6fbeb 100%);
   box-shadow: 0 20px 50px rgba(9, 51, 29, 0.26);
@@ -563,13 +654,33 @@ body {
   }
 }
 
+/* CAMPUS IMAGE SECTION */
+.campus-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 18px 32px;
+}
+.campus-frame {
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 22px 55px rgba(5, 40, 25, 0.32);
+  background: linear-gradient(180deg, #e9f5ee 0, #d7efe4 40%, #f5fff9 100%);
+}
+.campus-img {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  display: block;
+  filter: contrast(1.03) saturate(1.03) brightness(1.02);
+}
+
 /* COURSES GRID */
 .course-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 20px;
 }
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .course-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -578,6 +689,80 @@ body {
   .course-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* COURSE CARD WRAPPER to keep layout stable */
+.course-card-shell {
+  position: relative;
+  will-change: transform;
+}
+
+/* NEW COURSE CARD WITH POPUP HOVER + SLIDING OVERLAY */
+.course-card {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 14px 35px rgba(15, 50, 30, 0.12);
+  cursor: pointer;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transform-origin: center;
+}
+
+.course-card:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 22px 55px rgba(5, 40, 25, 0.32); /* Option B shadow */
+  z-index: 5;
+}
+
+.course-media {
+  position: relative;
+  overflow: hidden;
+}
+
+.course-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.course-card:hover .course-img {
+  transform: scale(1.05);
+}
+
+.course-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -90px; /* hidden just below image bottom */
+  background: linear-gradient(180deg, rgba(6,78,59,0.02) 0%, rgba(6,78,59,0.96) 30%, rgba(6,78,59,0.98) 100%);
+  color: #ecfdf5;
+  padding: 10px 12px 9px;
+  font-size: 12px;
+  line-height: 1.4;
+  transition: bottom 0.35s ease;
+}
+
+.course-card:hover .course-overlay {
+  bottom: 0; /* slides up over lower part of image only */
+}
+
+.course-overlay-title {
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.course-overlay-text {
+  font-size: 11px;
+}
+
+/* COURSE TEXT CONTENT */
+.course-content {
+  padding: 12px 14px 14px;
 }
 .course-title {
   font-size: 15px;
@@ -589,6 +774,8 @@ body {
   color: #4b5563;
   margin-top: 4px;
 }
+
+/* APPLY BUTTON */
 .btn-apply {
   margin-top: 10px;
   width: 100%;
@@ -612,9 +799,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
+  background: radial-gradient(circle at top, rgba(0,0,0,0.65), rgba(0,0,0,0.45));
+  backdrop-filter: blur(8px);
   z-index: 100;
+  animation: overlayFade 0.25s ease-out;
 }
 .auth-box {
   width: 95%;
@@ -625,6 +813,8 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.7);
+  transform-origin: center;
+  animation: softZoomFade 0.32s ease-out;
 }
 @media (max-width: 860px) {
   .auth-box {
@@ -713,6 +903,7 @@ body {
   justify-content: center;
   background: rgba(0, 0, 0, 0.45);
   z-index: 80;
+  animation: overlayFade 0.25s ease-out;
 }
 .apply-box {
   width: 90%;
@@ -721,6 +912,7 @@ body {
   border-radius: 20px;
   padding: 18px 18px 20px;
   box-shadow: 0 26px 55px rgba(0, 0, 0, 0.55);
+  animation: softZoomFade 0.3s ease-out;
 }
 
 /* FOOTER */
@@ -769,6 +961,17 @@ export default function App() {
     style.innerHTML = globalCSS;
     document.head.appendChild(style);
   }, []);
+
+  /* ============= TOAST SYSTEM ============= */
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = (msg, type = "success") => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, msg, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3000);
+  };
 
   /* GLOBAL / UI STATES */
   const [showTopBtn, setShowTopBtn] = useState(false);
@@ -826,16 +1029,23 @@ export default function App() {
   const saveProfile = (profile) => {
     setUserProfile(profile);
     localStorage.setItem("cftri_user_profile", JSON.stringify(profile));
+    showToast("Profile updated successfully.", "success");
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("cftri_user_profile");
     setUserProfile(null);
+    showToast("Logged out successfully.", "success");
   };
 
   /* ---------------- LOGIN API ---------------- */
   const handleLogin = async () => {
+    if (!loginEmail || !loginPassword) {
+      showToast("Please enter email and password.", "error");
+      return;
+    }
+
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
@@ -847,7 +1057,11 @@ export default function App() {
       });
 
       const data = await res.json();
-      alert(data.msg || "Login attempt completed.");
+
+      if (!res.ok) {
+        showToast(data.msg || "Invalid credentials.", "error");
+        return;
+      }
 
       if (data.token) {
         localStorage.setItem("token", data.token);
@@ -860,21 +1074,24 @@ export default function App() {
 
         saveProfile(profile);
         setAuthOpen(false);
+        showToast("Login successful.", "success");
+      } else {
+        showToast(data.msg || "Login failed. Please try again.", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Login failed. Please check console / backend.");
+      showToast("Login failed. Please check backend.", "error");
     }
   };
 
   /* -------------- REGISTER API --------------- */
   const handleRegister = async () => {
     if (!fullName || !regEmail || !regPassword) {
-      alert("Please fill Full Name, Email and Password.");
+      showToast("Please fill Full Name, Email and Password.", "error");
       return;
     }
     if (regPassword !== confirmPassword) {
-      alert("Passwords do not match.");
+      showToast("Passwords do not match.", "error");
       return;
     }
 
@@ -893,21 +1110,28 @@ export default function App() {
       });
 
       const data = await res.json();
-      alert(data.msg || "Registration completed.");
 
-      if (res.ok) {
-        setAuthMode("login");
-        setFullName("");
-        setRegEmail("");
-        setRegPassword("");
-        setConfirmPassword("");
-        setAddress("");
-        setPhone("");
-        setNationality("");
+      if (!res.ok) {
+        showToast(data.msg || "Registration failed.", "error");
+        return;
       }
+
+      showToast(
+        data.msg || "Registration successful! Please login to continue.",
+        "success"
+      );
+
+      setAuthMode("login");
+      setFullName("");
+      setRegEmail("");
+      setRegPassword("");
+      setConfirmPassword("");
+      setAddress("");
+      setPhone("");
+      setNationality("");
     } catch (err) {
       console.error(err);
-      alert("Registration failed. Check console / backend.");
+      showToast("Registration failed. Please check backend.", "error");
     }
   };
 
@@ -923,14 +1147,28 @@ export default function App() {
     setNavOpen(false);
   };
 
-  /* APPLY MODAL HANDLERS */
-  const openApplyModal = (course) => {
+  /* APPLY HELPERS (NEW LOGIC) */
+  const handleApplyClick = (course) => {
+    if (!userProfile) {
+      // Not logged in → open login splash
+      showToast("Please login or register before applying.", "error");
+      openLogin();
+      return;
+    }
+    // Logged in → open apply modal
     setSelectedCourse(course);
     setApplyOpen(true);
   };
 
+  const getApplyButtonLabel = () => {
+    return userProfile ? "Apply for this Training" : "Register / Sign in to Apply";
+  };
+
   const confirmApply = () => {
-    alert("Application submitted for: " + (selectedCourse?.title || ""));
+    showToast(
+      `Application recorded for: ${selectedCourse?.title || "Selected Course"}`,
+      "success"
+    );
     setApplyOpen(false);
   };
 
@@ -965,44 +1203,163 @@ export default function App() {
     },
   ];
 
+  // NEW COURSES WITH IMAGES + OVERLAY
   const courses = [
     {
-      title: "Food Processing & Preservation",
-      duration: "2 Weeks",
-      fee: "₹12,500",
-    },
-    {
-      title: "Chocolate Technology",
-      duration: "1 Week",
-      fee: "₹8,000",
-    },
-    {
-      title: "Bakery & Confectionery Technology",
-      duration: "10 Days",
-      fee: "₹10,000",
-    },
-    {
-      title: "Food Safety & Quality Management",
+      title: "Fumigation",
       duration: "1 Week",
       fee: "₹9,500",
+      image: "/images/courses/fumigation.jpg",
+      description:
+        "Safe fumigation protocols for stored grains and food commodities.",
     },
     {
-      title: "Dairy Technology & Quality",
+      title: "Fruits & Vegetables Products",
+      duration: "2 Weeks",
+      fee: "₹12,500",
+      image: "/images/courses/fruits_veg.jpg",
+      description:
+        "Processing, dehydration and value-added products from fruits & vegetables.",
+    },
+    {
+      title: "Spice Processing",
+      duration: "10 Days",
+      fee: "₹10,500",
+      image: "/images/courses/spices.jpg",
+      description:
+        "Cleaning, grading, grinding, blending and essential oil extraction from spices.",
+    },
+    {
+      title: "Millet Processing",
       duration: "1 Week",
       fee: "₹9,000",
+      image: "/images/courses/millets.jpg",
+      description:
+        "Milling, decortication and development of millet-based health foods.",
     },
     {
-      title: "Entrepreneurship in Processed Foods",
+      title: "Baking Technology",
+      duration: "1 Week",
+      fee: "₹9,500",
+      image: "/images/courses/baking.jpg",
+      description:
+        "Training on breads, biscuits, cakes and speciality baked products.",
+    },
+    {
+      title: "Food Safety Analysis",
+      duration: "2 Weeks",
+      fee: "₹15,000",
+      image: "/images/courses/food_safety.jpg",
+      description:
+        "Chemical, microbiological and instrumental methods for food safety evaluation.",
+    },
+    {
+      title: "Business Opportunities in Food Processing",
       duration: "3 Days",
       fee: "₹5,000",
+      image: "/images/courses/business.jpg",
+      description:
+        "Overview of food processing entrepreneurship, schemes and market opportunities.",
+    },
+    {
+      title: "Cell Culture Techniques",
+      duration: "1 Week",
+      fee: "₹14,000",
+      image: "/images/courses/cell_culture.jpg",
+      description:
+        "Basics of cell culture, aseptic handling and applications in food research.",
+    },
+    {
+      title: "Sensory Analysis of Foods",
+      duration: "4 Days",
+      fee: "₹6,500",
+      image: "/images/courses/sensory.jpg",
+      description:
+        "Sensory panels, profiling techniques and consumer acceptance studies.",
+    },
+    {
+      title: "HPLC for Food Analysis",
+      duration: "1 Week",
+      fee: "₹18,000",
+      image: "/images/courses/hplc.jpg",
+      description:
+        "High Performance Liquid Chromatography for nutrients and contaminants.",
+    },
+    {
+      title: "GC Techniques in Food",
+      duration: "1 Week",
+      fee: "₹18,000",
+      image: "/images/courses/gc.jpg",
+      description:
+        "Gas Chromatography for volatiles, flavor compounds and residue analysis.",
+    },
+    {
+      title: "Packaging Technology",
+      duration: "1 Week",
+      fee: "₹9,000",
+      image: "/images/courses/packaging.jpg",
+      description:
+        "Food packaging materials, shelf-life extension and regulatory requirements.",
+    },
+    {
+      title: "Extraction of Edible Oils & Fats",
+      duration: "6 Days",
+      fee: "₹11,000",
+      image: "/images/courses/oils.jpg",
+      description:
+        "Mechanical and solvent extraction of edible oils, refining and quality evaluation.",
+    },
+    {
+      title: "Solid Waste & Waste Water Management",
+      duration: "5 Days",
+      fee: "₹7,000",
+      image: "/images/courses/waste.jpg",
+      description:
+        "Effluent treatment, by-product utilisation and sustainable waste management.",
+    },
+    {
+      title: "Dairy Product Development",
+      duration: "1 Week",
+      fee: "₹9,000",
+      image: "/images/courses/dairy_dev.jpg",
+      description:
+        "Ice cream, cheese, fermented milk and value-added dairy product development.",
+    },
+    {
+      title: "Meat Processing",
+      duration: "1 Week",
+      fee: "₹10,500",
+      image: "/images/courses/meat.jpg",
+      description:
+        "Processing, preservation and quality assurance of meat and meat products.",
     },
   ];
 
   /* ============================================================
-     JSX
+     JSX STARTS
   ============================================================= */
   return (
     <>
+      {/* ==================== TOAST CONTAINER ==================== */}
+      <div className="toast-container">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className={`toast ${t.type === "error" ? "toast-error" : "toast-success"}`}
+          >
+            <div className="toast-icon">
+              {t.type === "error" ? "⚠" : "✔"}
+            </div>
+            <div className="toast-content">
+              <div className="toast-title">
+                {t.type === "error" ? "Error" : "Success"}
+              </div>
+              <div className="toast-message">{t.msg}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Floating soft glows */}
       <div className="floating-bg" />
       <div className="floating-bg2" />
@@ -1012,7 +1369,7 @@ export default function App() {
         <div className="navbar-inner">
           <div className="navbar-left">
             <img
-              src="/images/logo1.jpeg"
+              src="/images/logo1.png"
               alt="CFTRI Logo"
               className="navbar-logo"
             />
@@ -1096,6 +1453,17 @@ export default function App() {
         </div>
       </header>
 
+      {/* ==================== CAMPUS IMAGE ==================== */}
+      <section className="campus-shell fade">
+        <div className="campus-frame">
+          <img
+            src="/images/Mansion_pic.jpg"
+            alt="CSIR–CFTRI Campus"
+            className="campus-img"
+          />
+        </div>
+      </section>
+
       {/* ==================== HERO ==================== */}
       <main id="home-section">
         <section className="hero-shell fade">
@@ -1143,11 +1511,19 @@ export default function App() {
 
                 <button
                   className="hero-btn-outline"
-                  onClick={userProfile ? openApplyModal : openLogin}
+                  onClick={() => {
+                    if (!userProfile) {
+                      openLogin();
+                    } else {
+                      document
+                        .getElementById("courses-section")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
                 >
                   {userProfile
-                    ? "Apply for a Training"
-                    : "Login / Register as Participant"}
+                    ? "View & Apply for Trainings"
+                    : "Login / Register to Apply"}
                 </button>
               </div>
             </div>
@@ -1184,8 +1560,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* ==================== UPCOMING TRAININGS + PARTICIPANT CARD ==================== */}
-        <section className="section-shell">
+        {/* ==================== UPCOMING TRAININGS ==================== */}
+        <section className="section-shell" style={{ paddingTop: "10px" }}>
           <div className="upcoming-strip" id="schedule-section">
             {/* LEFT – UPCOMING LIST */}
             <div>
@@ -1195,9 +1571,7 @@ export default function App() {
                 {upcomingTrainings.map((t, index) => (
                   <div
                     key={t.code}
-                    className={`upcoming-card ${
-                      trainingsVisible ? "show" : ""
-                    }`}
+                    className={`upcoming-card ${trainingsVisible ? "show" : ""}`}
                     style={{
                       transitionDelay: trainingsVisible
                         ? `${index * 120}ms`
@@ -1231,8 +1605,7 @@ export default function App() {
               </div>
               <p className="participant-block-text">
                 {userProfile
-                  ? `You can now apply for scheduled Short Term Training courses, view your
-                submitted applications and receive official communication from CSIR–CFTRI.`
+                  ? "You can now apply for scheduled Short Term Training courses, view your submitted applications and receive official communication from CSIR–CFTRI."
                   : "Create a participant account to submit applications for CFTRI Short Term Training courses and receive all communication by email."}
               </p>
 
@@ -1248,16 +1621,14 @@ export default function App() {
           </div>
         </section>
 
-        {/* ==================== ABOUT STC ==================== */}
+        {/* ==================== ABOUT SECTION ==================== */}
         <section className="section-shell fade" id="about-section">
           <h2 className="section-heading">
             About Short Term Training at CSIR–CFTRI
           </h2>
           <p className="section-subtitle">
             CSIR–CFTRI conducts structured Short Term Training programmes
-            focusing on food processing, preservation, quality and safety. These
-            courses are suitable for students, faculty, industry professionals
-            and start-up entrepreneurs.
+            focusing on food processing, preservation, quality and safety.
           </p>
 
           <div className="feature-grid">
@@ -1276,8 +1647,7 @@ export default function App() {
                 Govt Recognised Certification
               </div>
               <p className="text-sm text-gray-700 mt-2">
-                Participants receive certificates issued by CSIR–CFTRI, which
-                enhance academic and professional credentials.
+                Participants receive certificates issued by CSIR–CFTRI.
               </p>
             </div>
 
@@ -1286,58 +1656,60 @@ export default function App() {
                 Multi-level Participation
               </div>
               <p className="text-sm text-gray-700 mt-2">
-                Programmes are open to undergraduate & postgraduate students,
-                faculty from universities and colleges, and industry delegates.
+                Programmes are open to students, faculty and industry delegates.
               </p>
             </div>
           </div>
-        </section>
-
-        {/* ==================== CAMPUS IMAGE ==================== */}
-        <section className="section-shell fade">
-          <img
-            src="/images/Mansion_pic.jpg"
-            alt="CSIR–CFTRI Campus"
-            style={{
-              width: "100%",
-              borderRadius: 24,
-              boxShadow: "0 18px 50px rgba(0,0,0,0.45)",
-              display: "block",
-            }}
-          />
         </section>
 
         {/* ==================== COURSES GRID ==================== */}
         <section className="section-shell fade" id="courses-section">
           <h2 className="section-heading">Short Term Training Courses</h2>
           <p className="section-subtitle">
-            Illustrative list of Short Term Training courses typically offered
-            by CSIR–CFTRI. Refer to the official schedule for final dates, fees
-            and modules.
+            Hover over each course card to see a quick overview.
           </p>
 
           <div className="course-grid">
             {courses.map((c) => (
-              <div key={c.title} className="card-stc">
-                <div className="course-title">{c.title}</div>
-                <div className="course-meta">
-                  <strong>Duration:</strong> {c.duration}
-                </div>
-                <div className="course-meta">
-                  <strong>Indicative Fee:</strong> {c.fee}
-                </div>
-                <button
-                  className="btn-apply"
-                  onClick={() => openApplyModal(c)}
+              <div key={c.title} className="course-card-shell">
+                <div
+                  className="course-card"
+                  onClick={() => handleApplyClick(c)}
                 >
-                  Apply for this Training
-                </button>
+                  <div className="course-media">
+                    <img src={c.image} alt={c.title} className="course-img" />
+
+                    <div className="course-overlay">
+                      <div className="course-overlay-title">{c.title}</div>
+                      <div className="course-overlay-text">{c.description}</div>
+                    </div>
+                  </div>
+
+                  <div className="course-content">
+                    <div className="course-title">{c.title}</div>
+                    <div className="course-meta">
+                      <strong>Duration:</strong> {c.duration}
+                    </div>
+                    <div className="course-meta">
+                      <strong>Indicative Fee:</strong> {c.fee}
+                    </div>
+                    <button
+                      className="btn-apply"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApplyClick(c);
+                      }}
+                    >
+                      {getApplyButtonLabel()}
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </section>
       </main>
-
       {/* ==================== AUTH MODAL ==================== */}
       {authOpen && (
         <div className="auth-bg">
@@ -1364,10 +1736,7 @@ export default function App() {
 
             {/* RIGHT PANEL */}
             <div className="auth-right">
-              <button
-                className="auth-close"
-                onClick={() => setAuthOpen(false)}
-              >
+              <button className="auth-close" onClick={() => setAuthOpen(false)}>
                 ×
               </button>
 
@@ -1530,8 +1899,8 @@ export default function App() {
 
             <p className="text-sm text-gray-700 mt-2">
               This records your interest for the selected Short Term Training
-              course. Final confirmation and payment details will be shared
-              through official communication from CSIR–CFTRI.
+              course. Final confirmation and payment details will be shared via
+              official communication from CSIR–CFTRI.
             </p>
 
             <button className="btn-apply mt-2" onClick={confirmApply}>
@@ -1559,8 +1928,7 @@ export default function App() {
 
       {/* ==================== FOOTER ==================== */}
       <footer className="footer-main">
-        © {new Date().getFullYear()} CSIR–CFTRI · Short Term Training Courses
-        Portal
+        © {new Date().getFullYear()} CSIR–CFTRI · Short Term Training Courses Portal
         <br />
         Developed & Maintained by ITS&CS, CSIR–CFTRI
       </footer>
