@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 /* ============================================================
    GLOBAL CSS – injected once into <head>
-   Theme: Indian Govt Green + Olive (soft, professional)
 ============================================================ */
 const globalCSS = `
 :root {
@@ -63,7 +62,7 @@ body {
   transform: none;
 }
 
-/* --------- SOFT ZOOM SPLASH FOR MODALS (A1) --------- */
+/* --------- SOFT ZOOM SPLASH FOR MODALS --------- */
 @keyframes softZoomFade {
   0% {
     opacity: 0;
@@ -80,7 +79,7 @@ body {
   100% { opacity: 1; }
 }
 
-/* ============ TOASTS (Option A – clean gov theme) ============ */
+/* ============ TOASTS ============ */
 .toast-container {
   position: fixed;
   top: 16px;
@@ -154,7 +153,7 @@ body {
   }
 }
 
-/* TYPO UTILS (simple) */
+/* TYPO UTILS */
 .text-lg { font-size: 1.05rem; }
 .text-base { font-size: 0.95rem; }
 .text-sm { font-size: 0.85rem; }
@@ -336,7 +335,7 @@ body {
 .hero-shell {
   max-width: 1200px;
   margin: 18px auto 0;
-  padding: 22px 18px 14px;   /* ↓ LESS bottom space */
+  padding: 22px 18px 14px;
   border-radius: 0 0 30px 30px;
   background: linear-gradient(135deg, var(--hero1), var(--hero2));
   color: #fefdfb;
@@ -487,7 +486,7 @@ body {
 
 /* UPCOMING TRAININGS STRIP */
 .upcoming-strip {
- margin-top: -4px;  /* pulled a bit closer to hero */
+ margin-top: -4px;
   border-radius: 26px;
   background: radial-gradient(circle at top left,#f7f9ef 0,#edf3dd 40%,#f6fbeb 100%);
   box-shadow: 0 20px 50px rgba(9, 51, 29, 0.26);
@@ -691,13 +690,13 @@ body {
   }
 }
 
-/* COURSE CARD WRAPPER to keep layout stable */
+/* COURSE CARD WRAPPER */
 .course-card-shell {
   position: relative;
   will-change: transform;
 }
 
-/* NEW COURSE CARD WITH POPUP HOVER + SLIDING OVERLAY */
+/* COURSE CARD */
 .course-card {
   position: relative;
   border-radius: 18px;
@@ -714,8 +713,7 @@ body {
 
 .course-card:hover {
   transform: translateY(-6px) scale(1.04);
-  box-shadow: 0 22px 55px rgba(5, 40, 25, 0.32); /* Option B shadow */
-  z-index: 5;
+  box-shadow: 0 22px 55px rgba(5, 40, 25, 0.32);
 }
 
 .course-media {
@@ -739,7 +737,7 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -90px; /* hidden just below image bottom */
+  bottom: -90px;
   background: linear-gradient(180deg, rgba(6,78,59,0.02) 0%, rgba(6,78,59,0.96) 30%, rgba(6,78,59,0.98) 100%);
   color: #ecfdf5;
   padding: 10px 12px 9px;
@@ -749,7 +747,7 @@ body {
 }
 
 .course-card:hover .course-overlay {
-  bottom: 0; /* slides up over lower part of image only */
+  bottom: 0;
 }
 
 .course-overlay-title {
@@ -955,14 +953,14 @@ body {
    MAIN APP COMPONENT
 ============================================================ */
 export default function App() {
-  /* Inject CSS once */
+  // inject CSS once
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = globalCSS;
     document.head.appendChild(style);
   }, []);
 
-  /* ============= TOAST SYSTEM ============= */
+  /* TOASTS */
   const [toasts, setToasts] = useState([]);
 
   const showToast = (msg, type = "success") => {
@@ -976,7 +974,7 @@ export default function App() {
   /* GLOBAL / UI STATES */
   const [showTopBtn, setShowTopBtn] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState("login"); // "login" | "register"
+  const [authMode, setAuthMode] = useState("login");
   const [navOpen, setNavOpen] = useState(false);
 
   /* LOGIN / REGISTER STATES */
@@ -1001,14 +999,37 @@ export default function App() {
   const [applyOpen, setApplyOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
+  /* APPLY FORM STATE */
+  const [applyForm, setApplyForm] = useState({
+    fullName: "",
+    email: "",
+    degree: "",
+    country: "",
+    state: "",
+    organisation: "",
+    category: "",
+    phone: "",
+    notes: "",
+  });
+
+  const updateApplyForm = (field, value) => {
+    setApplyForm((prev) => ({ ...prev, [field]: value }));
+  };
+
   /* Load profile, set scroll / animation */
   useEffect(() => {
     const stored = localStorage.getItem("cftri_user_profile");
     if (stored) {
-      setUserProfile(JSON.parse(stored));
+      const p = JSON.parse(stored);
+      setUserProfile(p);
+      setApplyForm((prev) => ({
+        ...prev,
+        fullName: p.name || "",
+        email: p.email || "",
+        phone: p.phone || "",
+      }));
     }
 
-    // start upcoming trainings smooth rise
     setTimeout(() => setTrainingsVisible(true), 300);
 
     const onScroll = () => {
@@ -1025,13 +1046,14 @@ export default function App() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
+  /* SAVE PROFILE */
   const saveProfile = (profile) => {
     setUserProfile(profile);
     localStorage.setItem("cftri_user_profile", JSON.stringify(profile));
     showToast("Profile updated successfully.", "success");
   };
 
+  /* LOGOUT */
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("cftri_user_profile");
@@ -1067,8 +1089,10 @@ export default function App() {
         localStorage.setItem("token", data.token);
 
         const profile = {
+          _id: data.user?._id,
           name: data.user?.name || loginEmail.split("@")[0],
           email: data.user?.email || loginEmail,
+          phone: data.user?.phone || "",
           lastLogin: new Date().toLocaleString(),
         };
 
@@ -1076,7 +1100,7 @@ export default function App() {
         setAuthOpen(false);
         showToast("Login successful.", "success");
       } else {
-        showToast(data.msg || "Login failed. Please try again.", "error");
+        showToast(data.msg || "Login failed.", "error");
       }
     } catch (err) {
       console.error(err);
@@ -1131,11 +1155,11 @@ export default function App() {
       setNationality("");
     } catch (err) {
       console.error(err);
-      showToast("Registration failed. Please check backend.", "error");
+      showToast("Registration failed. Check backend.", "error");
     }
   };
 
-  /* NAV MODAL OPENERS */
+  /* NAV HELPERS */
   const openLogin = () => {
     setAuthMode("login");
     setAuthOpen(true);
@@ -1147,35 +1171,73 @@ export default function App() {
     setNavOpen(false);
   };
 
-  /* APPLY HELPERS (NEW LOGIC) */
+  /* APPLY BUTTON CLICK */
   const handleApplyClick = (course) => {
     if (!userProfile) {
-      // Not logged in → open login splash
       showToast("Please login or register before applying.", "error");
       openLogin();
       return;
     }
-    // Logged in → open apply modal
     setSelectedCourse(course);
     setApplyOpen(true);
   };
 
-  const getApplyButtonLabel = () => {
-    return userProfile ? "Apply for this Training" : "Register / Sign in to Apply";
-  };
+  const getApplyButtonLabel = () =>
+    userProfile ? "Apply for this Training" : "Register / Sign in to Apply";
 
-  const confirmApply = () => {
-    showToast(
-      `Application recorded for: ${selectedCourse?.title || "Selected Course"}`,
-      "success"
-    );
+  /* SUBMIT APPLICATION → BACKEND */
+ const submitApplication = async () => {
+  const required = [
+    "fullName",
+    "email",
+    "degree",
+    "country",
+    "state",
+    "organisation",
+    "category",
+    "phone",
+  ];
+
+  for (let f of required) {
+    if (!applyForm[f] || !applyForm[f].trim()) {
+      showToast("Please fill all required fields (*)", "error");
+      return;
+    }
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/applications/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: userProfile?._id,
+        courseTitle: selectedCourse ? selectedCourse.title : "Unknown Course",
+
+        ...applyForm,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast(data.msg || "Submission failed", "error");
+      return;
+    }
+
+    showToast("Application submitted successfully!", "success");
     setApplyOpen(false);
-  };
 
+  } catch (err) {
+    console.error("SUBMIT ERROR:", err);
+    showToast("Cannot reach backend. Check URL.", "error");
+  }
+};
+
+  /* SCROLL TO TOP */
   const scrollToTop = () =>
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-  /* DATA: UPCOMING TRAININGS + COURSES */
+  /* UPCOMING TRAININGS */
   const upcomingTrainings = [
     {
       title: "Dairy Technology & Quality",
@@ -1203,13 +1265,13 @@ export default function App() {
     },
   ];
 
-  // NEW COURSES WITH IMAGES + OVERLAY
+  /* COURSES LIST */
   const courses = [
     {
       title: "Fumigation",
       duration: "1 Week",
       fee: "₹9,500",
-      image: "/images/courses/fumigation.jpg",
+      image: "/images/courses/fumigation.webp",
       description:
         "Safe fumigation protocols for stored grains and food commodities.",
     },
@@ -1225,7 +1287,7 @@ export default function App() {
       title: "Spice Processing",
       duration: "10 Days",
       fee: "₹10,500",
-      image: "/images/courses/spices.jpg",
+      image: "/images/courses/spice.JPG",
       description:
         "Cleaning, grading, grinding, blending and essential oil extraction from spices.",
     },
@@ -1233,7 +1295,7 @@ export default function App() {
       title: "Millet Processing",
       duration: "1 Week",
       fee: "₹9,000",
-      image: "/images/courses/millets.jpg",
+      image: "/images/courses/millets.png",
       description:
         "Milling, decortication and development of millet-based health foods.",
     },
@@ -1243,7 +1305,7 @@ export default function App() {
       fee: "₹9,500",
       image: "/images/courses/baking.jpg",
       description:
-        "Training on breads, biscuits, cakes and speciality baked products.",
+        "Training on breads, biscuits, cakes and speciality baked items.",
     },
     {
       title: "Food Safety Analysis",
@@ -1251,15 +1313,15 @@ export default function App() {
       fee: "₹15,000",
       image: "/images/courses/food_safety.jpg",
       description:
-        "Chemical, microbiological and instrumental methods for food safety evaluation.",
+        "Chemical, microbiological and instrumental analysis for food safety.",
     },
     {
       title: "Business Opportunities in Food Processing",
       duration: "3 Days",
       fee: "₹5,000",
-      image: "/images/courses/business.jpg",
+      image: "/images/courses/business.JPG",
       description:
-        "Overview of food processing entrepreneurship, schemes and market opportunities.",
+        "Entrepreneurship opportunities, schemes, funding and market trends.",
     },
     {
       title: "Cell Culture Techniques",
@@ -1267,55 +1329,55 @@ export default function App() {
       fee: "₹14,000",
       image: "/images/courses/cell_culture.jpg",
       description:
-        "Basics of cell culture, aseptic handling and applications in food research.",
+        "Basics of cell culture, aseptic handling and food research applications.",
     },
-    {
-      title: "Sensory Analysis of Foods",
-      duration: "4 Days",
-      fee: "₹6,500",
-      image: "/images/courses/sensory.jpg",
-      description:
-        "Sensory panels, profiling techniques and consumer acceptance studies.",
-    },
-    {
-      title: "HPLC for Food Analysis",
-      duration: "1 Week",
-      fee: "₹18,000",
-      image: "/images/courses/hplc.jpg",
-      description:
-        "High Performance Liquid Chromatography for nutrients and contaminants.",
-    },
-    {
-      title: "GC Techniques in Food",
-      duration: "1 Week",
-      fee: "₹18,000",
-      image: "/images/courses/gc.jpg",
-      description:
-        "Gas Chromatography for volatiles, flavor compounds and residue analysis.",
-    },
+    // {
+    //   title: "Sensory Analysis of Foods",
+    //   duration: "4 Days",
+    //   fee: "₹6,500",
+    //   image: "/images/courses/sensory.jpg",
+    //   description:
+    //     "Sensory panels, profiling techniques and consumer studies.",
+    // },
+    // {
+    //   title: "HPLC for Food Analysis",
+    //   duration: "1 Week",
+    //   fee: "₹18,000",
+    //   image: "/images/courses/hplc.jpg",
+    //   description:
+    //     "HPLC techniques for nutrients and contaminants analysis.",
+    // },
+    // {
+    //   title: "GC Techniques in Food",
+    //   duration: "1 Week",
+    //   fee: "₹18,000",
+    //   image: "/images/courses/gc.jpg",
+    //   description:
+    //     "Gas Chromatography for volatiles and flavor compounds.",
+    // },
     {
       title: "Packaging Technology",
       duration: "1 Week",
       fee: "₹9,000",
       image: "/images/courses/packaging.jpg",
       description:
-        "Food packaging materials, shelf-life extension and regulatory requirements.",
+        "Packaging materials, shelf-life improvement and standards.",
     },
-    {
-      title: "Extraction of Edible Oils & Fats",
-      duration: "6 Days",
-      fee: "₹11,000",
-      image: "/images/courses/oils.jpg",
-      description:
-        "Mechanical and solvent extraction of edible oils, refining and quality evaluation.",
-    },
+      // {
+      //   title: "Extraction of Edible Oils & Fats",
+      //   duration: "6 Days",
+      //   fee: "₹11,000",
+      //   image: "/images/courses/oils.jpg",
+      //   description:
+      //     "Oil extraction, refining and quality evaluation.",
+      // },
     {
       title: "Solid Waste & Waste Water Management",
       duration: "5 Days",
       fee: "₹7,000",
       image: "/images/courses/waste.jpg",
       description:
-        "Effluent treatment, by-product utilisation and sustainable waste management.",
+        "Effluent treatment, by-product utilisation and waste management.",
     },
     {
       title: "Dairy Product Development",
@@ -1323,34 +1385,31 @@ export default function App() {
       fee: "₹9,000",
       image: "/images/courses/dairy_dev.jpg",
       description:
-        "Ice cream, cheese, fermented milk and value-added dairy product development.",
+        "Ice cream, cheese, fermented milk and dairy innovations.",
     },
     {
       title: "Meat Processing",
       duration: "1 Week",
       fee: "₹10,500",
-      image: "/images/courses/meat.jpg",
+      image: "/images/courses/meat.png",
       description:
-        "Processing, preservation and quality assurance of meat and meat products.",
+        "Processing, preservation and quality control of meat products.",
     },
   ];
-
   /* ============================================================
-     JSX STARTS
+      JSX START
   ============================================================= */
   return (
     <>
-      {/* ==================== TOAST CONTAINER ==================== */}
+      {/* ================= TOASTS ================= */}
       <div className="toast-container">
         {toasts.map((t) => (
           <div
             key={t.id}
             className={`toast ${t.type === "error" ? "toast-error" : "toast-success"}`}
           >
-            <div className="toast-icon">
-              {t.type === "error" ? "⚠" : "✔"}
-            </div>
-            <div className="toast-content">
+            <div className="toast-icon">{t.type === "error" ? "⚠" : "✔"}</div>
+            <div>
               <div className="toast-title">
                 {t.type === "error" ? "Error" : "Success"}
               </div>
@@ -1360,19 +1419,15 @@ export default function App() {
         ))}
       </div>
 
-      {/* Floating soft glows */}
-      <div className="floating-bg" />
-      <div className="floating-bg2" />
+      {/* Floating glows */}
+      <div className="floating-bg"></div>
+      <div className="floating-bg2"></div>
 
-      {/* ==================== NAVBAR ==================== */}
+      {/* ================= NAVBAR ================= */}
       <header className="navbar-stc">
         <div className="navbar-inner">
           <div className="navbar-left">
-            <img
-              src="/images/logo1.png"
-              alt="CFTRI Logo"
-              className="navbar-logo"
-            />
+            <img src="/images/logo1.png" className="navbar-logo" alt="logo" />
             <div className="navbar-titles">
               <div className="navbar-title-top">
                 CSIR – Central Food Technological Research Institute, Mysuru
@@ -1383,10 +1438,7 @@ export default function App() {
             </div>
           </div>
 
-          <button
-            className="navbar-burger"
-            onClick={() => setNavOpen((v) => !v)}
-          >
+          <button className="navbar-burger" onClick={() => setNavOpen(!navOpen)}>
             ☰
           </button>
 
@@ -1394,50 +1446,53 @@ export default function App() {
             <span
               className="navbar-link"
               onClick={() =>
-                document
-                  .getElementById("home-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("home-section")?.scrollIntoView({
+                  behavior: "smooth",
+                })
               }
             >
               Home
             </span>
+
             <span
               className="navbar-link"
               onClick={() =>
-                document
-                  .getElementById("about-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("about-section")?.scrollIntoView({
+                  behavior: "smooth",
+                })
               }
             >
               About
             </span>
+
             <span
               className="navbar-link"
               onClick={() =>
-                document
-                  .getElementById("courses-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("courses-section")?.scrollIntoView({
+                  behavior: "smooth",
+                })
               }
             >
               Courses
             </span>
+
             <span
               className="navbar-link"
               onClick={() =>
-                document
-                  .getElementById("schedule-section")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("schedule-section")?.scrollIntoView({
+                  behavior: "smooth",
+                })
               }
             >
               Schedule
             </span>
 
             <div className="navbar-right">
-              {userProfile && (
+              {userProfile ? (
                 <div className="navbar-hello">
                   Hello, <strong>{userProfile.name}</strong>
                 </div>
-              )}
+              ) : null}
 
               {!userProfile ? (
                 <button className="navbar-cta" onClick={openLogin}>
@@ -1453,22 +1508,22 @@ export default function App() {
         </div>
       </header>
 
-      {/* ==================== CAMPUS IMAGE ==================== */}
+      {/* ================= CAMPUS IMAGE ================= */}
       <section className="campus-shell fade">
         <div className="campus-frame">
           <img
             src="/images/Mansion_pic.jpg"
-            alt="CSIR–CFTRI Campus"
+            alt="CFTRI Campus"
             className="campus-img"
           />
         </div>
       </section>
 
-      {/* ==================== HERO ==================== */}
+      {/* ================= HERO SECTION ================= */}
       <main id="home-section">
         <section className="hero-shell fade">
           <div className="hero-grid">
-            {/* LEFT HERO CONTENT */}
+            {/* LEFT HERO */}
             <div>
               <div className="hero-badge">
                 <span className="hero-badge-dot" />
@@ -1481,19 +1536,17 @@ export default function App() {
               </h1>
 
               <p className="hero-subtitle">
-                Structured, time-bound training modules in food processing,
-                safety and nutrition for students, faculty, industry and
-                entrepreneurs.
+                Structured training modules in food processing, safety and
+                nutrition for students, faculty, industry and entrepreneurs.
               </p>
 
               <div className="hero-meta">
                 <div>
-                  <span className="hero-meta-label">Training Session:</span>
-                  <span> 2025–2026 (Short Term)</span>
+                  <span className="hero-meta-label">Training Session:</span>{" "}
+                  February – July 2025
                 </div>
                 <div className="hero-meta-line">
-                  <span className="hero-meta-label">Mode:</span>
-                  <span> On-Campus · Online · Hybrid</span>
+                  Mode: Online | Offline | Hybrid
                 </div>
               </div>
 
@@ -1501,410 +1554,277 @@ export default function App() {
                 <button
                   className="hero-btn-primary"
                   onClick={() =>
-                    document
-                      .getElementById("schedule-section")
-                      ?.scrollIntoView({ behavior: "smooth" })
+                    document.getElementById("courses-section")?.scrollIntoView({
+                      behavior: "smooth",
+                    })
                   }
                 >
-                  View Upcoming Trainings
+                  View Courses
                 </button>
 
                 <button
                   className="hero-btn-outline"
-                  onClick={() => {
-                    if (!userProfile) {
-                      openLogin();
-                    } else {
-                      document
-                        .getElementById("courses-section")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
+                  onClick={() =>
+                    document.getElementById("about-section")?.scrollIntoView({
+                      behavior: "smooth",
+                    })
+                  }
                 >
-                  {userProfile
-                    ? "View & Apply for Trainings"
-                    : "Login / Register to Apply"}
+                  About CFTRI
                 </button>
               </div>
             </div>
 
-            {/* RIGHT PARTICIPANT PANEL */}
+            {/* RIGHT HERO PANEL */}
             <div className="participant-panel">
-              <div className="participant-title">
-                Participant Access – Short Term Training (STC)
-              </div>
+              <div className="participant-title">Participants & Eligibility</div>
 
               <div className="participant-tag-row">
-                <span className="participant-tag">Govt Recognised</span>
-                <span className="participant-tag">Limited Seats</span>
-                <span className="participant-tag">Hands-on Practicals</span>
+                <div className="participant-tag">Students</div>
+                <div className="participant-tag">Faculty</div>
+                <div className="participant-tag">Industry</div>
+                <div className="participant-tag">Entrepreneurs</div>
               </div>
 
-              <p className="participant-text">
-                Use this portal to apply for CFTRI Short Term Training courses,
-                track your application status and download call letters and
-                certificates (where applicable).
-              </p>
-
-              <div className="participant-status">
-                <span className="participant-status-dot" />
-                Portal active for Short Term Training participants
+              <div className="participant-text">
+                Join high-impact professional training modules with certification,
+                hands-on sessions and expert faculty.
               </div>
 
-              <p className="participant-login-hint">
-                {userProfile
-                  ? `Logged in as ${userProfile.email}. Last login: ${userProfile.lastLogin}.`
-                  : "Please login or register as a participant before submitting training applications."}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ==================== UPCOMING TRAININGS ==================== */}
-        <section className="section-shell" style={{ paddingTop: "10px" }}>
-          <div className="upcoming-strip" id="schedule-section">
-            {/* LEFT – UPCOMING LIST */}
-            <div>
-              <div className="upcoming-pill">Upcoming Short Term Trainings</div>
-
-              <div className="upcoming-list">
-                {upcomingTrainings.map((t, index) => (
-                  <div
-                    key={t.code}
-                    className={`upcoming-card ${trainingsVisible ? "show" : ""}`}
-                    style={{
-                      transitionDelay: trainingsVisible
-                        ? `${index * 120}ms`
-                        : "0ms",
-                    }}
-                  >
-                    <div className="upcoming-title">{t.title}</div>
-                    <div className="upcoming-meta">
-                      <strong>Code:</strong> {t.code}
-                    </div>
-                    <div className="upcoming-meta">
-                      <strong>Dates:</strong> {t.dates} · {t.mode}
-                    </div>
-                    <span className="upcoming-chip">
-                      <span>📌</span> Short Term Training (STC)
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <button className="btn-schedule">
-                Download Training Schedule 2025–2026
-              </button>
-            </div>
-
-            {/* RIGHT – PARTICIPANT WELCOME CARD */}
-            <div className="participant-block fade">
-              <div className="participant-block-title">Participant Space</div>
-              <div className="participant-block-name">
-                {userProfile ? `Welcome, ${userProfile.name}` : "Welcome, Guest"}
-              </div>
-              <p className="participant-block-text">
-                {userProfile
-                  ? "You can now apply for scheduled Short Term Training courses, view your submitted applications and receive official communication from CSIR–CFTRI."
-                  : "Create a participant account to submit applications for CFTRI Short Term Training courses and receive all communication by email."}
-              </p>
-
-              {!userProfile && (
-                <button
-                  className="participant-block-btn"
-                  onClick={openRegister}
-                >
-                  Register as New Participant
-                </button>
+              {userProfile ? (
+                <div className="participant-status">
+                  <span className="participant-status-dot"></span>
+                  Logged in as <b>{userProfile.name}</b>
+                </div>
+              ) : (
+                <div className="participant-login-hint">
+                  Please sign in to apply for trainings.
+                </div>
               )}
             </div>
-          </div>
-        </section>
-
-        {/* ==================== ABOUT SECTION ==================== */}
-        <section className="section-shell fade" id="about-section">
-          <h2 className="section-heading">
-            About Short Term Training at CSIR–CFTRI
-          </h2>
-          <p className="section-subtitle">
-            CSIR–CFTRI conducts structured Short Term Training programmes
-            focusing on food processing, preservation, quality and safety.
-          </p>
-
-          <div className="feature-grid">
-            <div className="card-stc">
-              <div className="text-green-900 font-semibold">
-                Hands-on Lab Exposure
-              </div>
-              <p className="text-sm text-gray-700 mt-2">
-                Training in CFTRI pilot plants, analytical laboratories and
-                processing units with practical demonstrations and experiments.
-              </p>
-            </div>
-
-            <div className="card-stc">
-              <div className="text-green-900 font-semibold">
-                Govt Recognised Certification
-              </div>
-              <p className="text-sm text-gray-700 mt-2">
-                Participants receive certificates issued by CSIR–CFTRI.
-              </p>
-            </div>
-
-            <div className="card-stc">
-              <div className="text-green-900 font-semibold">
-                Multi-level Participation
-              </div>
-              <p className="text-sm text-gray-700 mt-2">
-                Programmes are open to students, faculty and industry delegates.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ==================== COURSES GRID ==================== */}
-        <section className="section-shell fade" id="courses-section">
-          <h2 className="section-heading">Short Term Training Courses</h2>
-          <p className="section-subtitle">
-            Hover over each course card to see a quick overview.
-          </p>
-
-          <div className="course-grid">
-            {courses.map((c) => (
-              <div key={c.title} className="course-card-shell">
-                <div
-                  className="course-card"
-                  onClick={() => handleApplyClick(c)}
-                >
-                  <div className="course-media">
-                    <img src={c.image} alt={c.title} className="course-img" />
-
-                    <div className="course-overlay">
-                      <div className="course-overlay-title">{c.title}</div>
-                      <div className="course-overlay-text">{c.description}</div>
-                    </div>
-                  </div>
-
-                  <div className="course-content">
-                    <div className="course-title">{c.title}</div>
-                    <div className="course-meta">
-                      <strong>Duration:</strong> {c.duration}
-                    </div>
-                    <div className="course-meta">
-                      <strong>Indicative Fee:</strong> {c.fee}
-                    </div>
-                    <button
-                      className="btn-apply"
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleApplyClick(c);
-                      }}
-                    >
-                      {getApplyButtonLabel()}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
       </main>
-      {/* ==================== AUTH MODAL ==================== */}
-      {authOpen && (
-        <div className="auth-bg">
-          <div className="auth-box">
-            {/* LEFT PANEL */}
-            <div className="auth-left">
-              <div>
-                <div className="auth-tag">CSIR–CFTRI • STC Portal</div>
-                <div className="auth-heading">
-                  {authMode === "login"
-                    ? "Participant Login"
-                    : "New Participant Registration"}
+
+      {/* ================= UPCOMING TRAININGS ================= */}
+      <section className="section-shell fade" id="schedule-section">
+        <div className="upcoming-strip">
+          <div>
+            <div className="upcoming-pill">Upcoming Trainings</div>
+
+            <div className="upcoming-list">
+              {upcomingTrainings.map((t, i) => (
+                <div
+                  key={i}
+                  className={`upcoming-card ${trainingsVisible ? "show" : ""}`}
+                  style={{ transitionDelay: `${i * 120}ms` }}
+                >
+                  <div className="upcoming-title">{t.title}</div>
+                  <div className="upcoming-meta">Starts: {t.dates}</div>
+                  <div className="upcoming-chip">Mode: {t.mode}</div>
                 </div>
-                <p className="auth-left-sub">
-                  Access and manage your Short Term Training applications,
-                  download call letters and certificates (where applicable).
-                </p>
-              </div>
-              <div className="auth-mini">
-                Secure login • Govt recognised programmes • Online / On-campus
-                delivery
-              </div>
+              ))}
             </div>
+          </div>
 
-            {/* RIGHT PANEL */}
-            <div className="auth-right">
-              <button className="auth-close" onClick={() => setAuthOpen(false)}>
-                ×
-              </button>
+          <div>
+            <button
+              className="btn-schedule"
+              onClick={() =>
+                document.getElementById("courses-section")?.scrollIntoView({
+                  behavior: "smooth",
+                })
+              }
+            >
+              View Full Schedule →
+            </button>
+          </div>
+        </div>
+      </section>
 
-              {/* LOGIN FORM */}
-              {authMode === "login" && (
-                <>
-                  <h3 className="text-lg font-semibold mb-3">Login</h3>
+      {/* ================= ABOUT US ================= */}
+      <section id="about-section" className="section-shell fade">
+        <h2 className="section-heading">About CFTRI</h2>
+        <p className="section-subtitle">
+          CSIR–CFTRI is a premier research laboratory working in food technology,
+          research, product development and training.
+        </p>
 
-                  <div className="mb-3">
-                    <div className="label-sm">Registered Email</div>
-                    <input
-                      className="input-field"
-                      type="email"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <div className="label-sm">Password</div>
-                    <input
-                      className="input-field"
-                      type="password"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder="••••••••"
-                    />
-                  </div>
-
-                  <button className="btn-apply mt-2" onClick={handleLogin}>
-                    Login
-                  </button>
-
-                  <div className="auth-switch">
-                    New participant?{" "}
-                    <span
-                      className="auth-link"
-                      onClick={() => setAuthMode("register")}
-                    >
-                      Register here
-                    </span>
-                  </div>
-                </>
-              )}
-
-              {/* REGISTER FORM */}
-              {authMode === "register" && (
-                <>
-                  <h3 className="text-lg font-semibold mb-3">
-                    Register as Participant
-                  </h3>
-
-                  <div className="grid-two mb-2">
-                    <div>
-                      <div className="label-sm">Full Name</div>
-                      <input
-                        className="input-field"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Your full name"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="label-sm">Email</div>
-                      <input
-                        className="input-field"
-                        type="email"
-                        value={regEmail}
-                        onChange={(e) => setRegEmail(e.target.value)}
-                        placeholder="you@example.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid-two mb-2">
-                    <div>
-                      <div className="label-sm">Address</div>
-                      <input
-                        className="input-field"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="City / Institution / Address"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="label-sm">Phone</div>
-                      <input
-                        className="input-field"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="10-digit mobile"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-2">
-                    <div className="label-sm">Nationality</div>
-                    <input
-                      className="input-field"
-                      value={nationality}
-                      onChange={(e) => setNationality(e.target.value)}
-                      placeholder="Indian / Other"
-                    />
-                  </div>
-
-                  <div className="grid-two mb-2">
-                    <div>
-                      <div className="label-sm">Password</div>
-                      <input
-                        className="input-field"
-                        type="password"
-                        value={regPassword}
-                        onChange={(e) => setRegPassword(e.target.value)}
-                        placeholder="Create password"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="label-sm">Confirm Password</div>
-                      <input
-                        className="input-field"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Re-enter password"
-                      />
-                    </div>
-                  </div>
-
-                  <button className="btn-apply mt-2" onClick={handleRegister}>
-                    Register
-                  </button>
-
-                  <div className="auth-switch">
-                    Already registered?{" "}
-                    <span
-                      className="auth-link"
-                      onClick={() => setAuthMode("login")}
-                    >
-                      Login here
-                    </span>
-                  </div>
-                </>
-              )}
+        <div className="card-stc">
+          <div className="feature-grid">
+            <div>
+              <h3 className="text-lg font-semibold text-green-900 mb-2">R&D</h3>
+              <p className="text-sm text-gray-600">
+                Advanced research in food processing, safety and biotechnology.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-green-900 mb-2">
+                Training
+              </h3>
+              <p className="text-sm text-gray-600">
+                Hands-on training programs for students, faculty and industry
+                professionals.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-green-900 mb-2">
+                Consultancy
+              </h3>
+              <p className="text-sm text-gray-600">
+                Technical consultancy, technology transfer and incubation support.
+              </p>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* ==================== APPLY MODAL ==================== */}
+      {/* ================= COURSES GRID ================= */}
+      <section id="courses-section" className="section-shell fade">
+        <h2 className="section-heading">Available Courses</h2>
+        <p className="section-subtitle">
+          Explore CFTRI’s certified short-term training programs.
+        </p>
+
+        <div className="course-grid">
+          {courses.map((c, i) => (
+            <div key={i} className="course-card-shell">
+              <div className="course-card">
+                <div className="course-media">
+                  <img src={c.image} alt={c.title} className="course-img" />
+                  <div className="course-overlay">
+                    <div className="course-overlay-title">{c.title}</div>
+                    <div className="course-overlay-text">{c.description}</div>
+                  </div>
+                </div>
+
+                <div className="course-content">
+                  <div className="course-title">{c.title}</div>
+                  <div className="course-meta">
+                    Duration: {c.duration} • Fee: {c.fee}
+                  </div>
+
+                  <button
+                    className="btn-apply"
+                    onClick={() => handleApplyClick(c)}
+                  >
+                    {getApplyButtonLabel()}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      {/* ================= APPLY MODAL ================= */}
       {applyOpen && (
         <div className="apply-bg">
           <div className="apply-box">
-            <h3 className="text-base font-semibold text-green-900">
+            <h3 className="text-lg font-semibold text-green-900">
               Apply for {selectedCourse?.title}
             </h3>
 
             <p className="text-sm text-gray-700 mt-2">
-              This records your interest for the selected Short Term Training
-              course. Final confirmation and payment details will be shared via
-              official communication from CSIR–CFTRI.
+              Please fill the details below to submit your application.
             </p>
 
-            <button className="btn-apply mt-2" onClick={confirmApply}>
-              Confirm Application
+            {/* FORM */}
+            <div className="mt-3">
+              <div className="mb-2">
+                <div className="label-sm">Full Name *</div>
+                <input
+                  className="input-field"
+                  value={applyForm.fullName}
+                  onChange={(e) => updateApplyForm("fullName", e.target.value)}
+                />
+              </div>
+
+              <div className="mb-2">
+                <div className="label-sm">Email *</div>
+                <input
+                  className="input-field"
+                  value={applyForm.email}
+                  onChange={(e) => updateApplyForm("email", e.target.value)}
+                />
+              </div>
+
+              <div className="mb-2">
+                <div className="label-sm">Degree / Qualification *</div>
+                <input
+                  className="input-field"
+                  placeholder="B.Tech Food Tech / MSc Microbiology"
+                  value={applyForm.degree}
+                  onChange={(e) => updateApplyForm("degree", e.target.value)}
+                />
+              </div>
+
+              <div className="grid-two">
+                <div className="mb-2">
+                  <div className="label-sm">Country *</div>
+                  <input
+                    className="input-field"
+                    value={applyForm.country}
+                    onChange={(e) => updateApplyForm("country", e.target.value)}
+                  />
+                </div>
+
+                <div className="mb-2">
+                  <div className="label-sm">State *</div>
+                  <input
+                    className="input-field"
+                    value={applyForm.state}
+                    onChange={(e) => updateApplyForm("state", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <div className="label-sm">Organisation / Institution *</div>
+                <input
+                  className="input-field"
+                  value={applyForm.organisation}
+                  onChange={(e) => updateApplyForm("organisation", e.target.value)}
+                />
+              </div>
+
+              <div className="mb-2">
+                <div className="label-sm">Category *</div>
+                <select
+                  className="input-field"
+                  value={applyForm.category}
+                  onChange={(e) => updateApplyForm("category", e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="Student">Student</option>
+                  <option value="Faculty">Faculty</option>
+                  <option value="Industry Professional">Industry Professional</option>
+                  <option value="Entrepreneur">Entrepreneur</option>
+                </select>
+              </div>
+
+              <div className="mb-2">
+                <div className="label-sm">Phone *</div>
+                <input
+                  className="input-field"
+                  value={applyForm.phone}
+                  onChange={(e) => updateApplyForm("phone", e.target.value)}
+                />
+              </div>
+
+              <div className="mb-2">
+                <div className="label-sm">Comments (Optional)</div>
+                <textarea
+                  className="input-field"
+                  rows="3"
+                  value={applyForm.notes}
+                  onChange={(e) => updateApplyForm("notes", e.target.value)}
+                  placeholder="Any additional information..."
+                ></textarea>
+              </div>
+            </div>
+
+            <button className="btn-apply mt-2" onClick={submitApplication}>
+              Submit Application
             </button>
 
             <button
@@ -1926,14 +1846,169 @@ export default function App() {
         </div>
       )}
 
-      {/* ==================== FOOTER ==================== */}
+      {/* ================= AUTH MODAL ================= */}
+      {authOpen && (
+        <div className="auth-bg">
+          <div className="auth-box">
+            <div className="auth-left">
+              <div>
+                <div className="auth-tag">CSIR–CFTRI STC</div>
+                <div className="auth-heading">
+                  {authMode === "login" ? "Participant Login" : "Create an Account"}
+                </div>
+                <p className="auth-left-sub">
+                  Access CFTRI's official training portal and manage applications.
+                </p>
+              </div>
+            </div>
+
+            <div className="auth-right">
+              <button className="auth-close" onClick={() => setAuthOpen(false)}>
+                ×
+              </button>
+
+              {/* LOGIN */}
+              {authMode === "login" && (
+                <>
+                  <h3 className="text-lg font-semibold mb-3">Login</h3>
+
+                  <div className="mb-3">
+                    <div className="label-sm">Email *</div>
+                    <input
+                      className="input-field"
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="you@example.com"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="label-sm">Password *</div>
+                    <input
+                      className="input-field"
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••"
+                    />
+                  </div>
+
+                  <button className="btn-apply mt-2" onClick={handleLogin}>
+                    Login
+                  </button>
+
+                  <div className="auth-switch">
+                    New user?{" "}
+                    <span className="auth-link" onClick={() => setAuthMode("register")}>
+                      Register here
+                    </span>
+                  </div>
+                </>
+              )}
+
+              {/* REGISTER */}
+              {authMode === "register" && (
+                <>
+                  <h3 className="text-lg font-semibold mb-3">Create Account</h3>
+
+                  <div className="grid-two mb-2">
+                    <div>
+                      <div className="label-sm">Full Name *</div>
+                      <input
+                        className="input-field"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="label-sm">Email *</div>
+                      <input
+                        className="input-field"
+                        type="email"
+                        value={regEmail}
+                        onChange={(e) => setRegEmail(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid-two mb-2">
+                    <div>
+                      <div className="label-sm">Address *</div>
+                      <input
+                        className="input-field"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="label-sm">Phone *</div>
+                      <input
+                        className="input-field"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-2">
+                    <div className="label-sm">Nationality *</div>
+                    <input
+                      className="input-field"
+                      value={nationality}
+                      onChange={(e) => setNationality(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid-two mb-2">
+                    <div>
+                      <div className="label-sm">Password *</div>
+                      <input
+                        className="input-field"
+                        type="password"
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="label-sm">Confirm Password *</div>
+                      <input
+                        className="input-field"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <button className="btn-apply mt-2" onClick={handleRegister}>
+                    Register
+                  </button>
+
+                  <div className="auth-switch">
+                    Already registered?{" "}
+                    <span className="auth-link" onClick={() => setAuthMode("login")}>
+                      Sign in here
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= FOOTER ================= */}
       <footer className="footer-main">
-        © {new Date().getFullYear()} CSIR–CFTRI · Short Term Training Courses Portal
+        © {new Date().getFullYear()} CSIR–CFTRI · STC Portal
         <br />
-        Developed & Maintained by ITS&CS, CSIR–CFTRI
+        Developed by ITS&CS, CSIR–CFTRI
       </footer>
 
-      {/* ==================== SCROLL TO TOP ==================== */}
+      {/* ================= SCROLL TOP ================= */}
       {showTopBtn && (
         <button className="scroll-top-btn" onClick={scrollToTop}>
           ↑
@@ -1941,4 +2016,4 @@ export default function App() {
       )}
     </>
   );
-}
+}  // <-- FINAL CLOSING BRACE (VERY IMPORTANT)
