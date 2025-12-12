@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 /* ============================================================
    GLOBAL CSS – injected once into <head>
+   (Existing CSS preserved; added profile card & edit modal styles)
 ============================================================ */
 const globalCSS = `
 :root {
@@ -208,7 +209,7 @@ body {
   gap: 10px;
 }
 .navbar-logo {
-  width: 50px;
+  width: 80px;
   height: 50px;
   border-radius: 14px;
   background: #ffffff;
@@ -269,8 +270,10 @@ body {
   gap: 10px;
 }
 .navbar-hello {
-  font-size: 12px;
-  color: #e0ffe9;
+  
+  font-size: 20px;
+  color: #00da5bff;
+  text-shadow: 0 0 8px #00da5bff;
 }
 .navbar-cta {
   background: #ffffff;
@@ -494,6 +497,8 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.1fr);
   gap: 20px;
+  align-items: start;   /* ⭐ ensures both columns top-align */
+
 }
 @media (max-width: 960px) {
   .upcoming-strip {
@@ -514,9 +519,28 @@ body {
 .upcoming-list {
   background: #ffffff;
   border-radius: 18px;
-  padding: 6px 8px 8px;
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.08);
+  padding: 0;
+  height: 240px; /* 4 cards visible */
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.08);
 }
+
+.ticker-wrapper {
+  display: flex;
+  flex-direction: column;
+  animation: tickerScroll 12s linear infinite;
+}
+
+.ticker-wrapper:hover {
+  animation-play-state: paused; /* Pause on hover */
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
 .upcoming-card {
   position: relative;
   background: #f7fbf2;
@@ -947,6 +971,286 @@ body {
 
 /* SIMPLE UTILITY FOR CENTER */
 .text-center { text-align: center; }
+
+
+/* ================== PROFILE CARD (NEW) ================== */
+.profile-shell {
+  display: flex;
+  align-items: flex-start;   /* already good */
+  justify-content: flex-start;  
+  padding-top: 0;             /* ⭐ remove unwanted push down */
+  margin-top: -10px;          /* ⭐ pull entire right column up */
+}
+
+/* make the right column content sticky to viewport while leaving responsive behavior */
+.profile-sticky {
+  position: sticky;
+  top: 40px;
+  width: 100%;
+  max-width: 320px;
+  align-self: start;
+}
+
+/* profile card */
+.profile-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fff8 100%);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 20px 48px rgba(6, 44, 32, 0.12);
+  border: 1px solid rgba(6,78,59,0.06);
+  text-align: center;
+  transform-origin: center;
+  animation: cardSlideIn 0.5s cubic-bezier(.2,.9,.3,1);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+/* slight hover lift */
+.profile-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 70px rgba(6, 50, 36, 0.18);
+}
+
+/* avatar */
+.profile-avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(6,78,59,0.06), rgba(6,78,59,0.02));
+  border: 4px solid rgba(6,78,59,0.06);
+  overflow: hidden;
+  margin: 2px 0 10px;
+  position: relative;
+  box-shadow: 0 12px 30px rgba(6,70,46,0.06);
+  animation: avatarFloat 3.6s ease-in-out infinite;
+}
+
+/* avatar image */
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform-origin: center;
+  transition: transform 0.6s ease, filter 0.4s ease;
+}
+
+/* subtle hover zoom */
+.profile-card:hover .profile-avatar img {
+  transform: scale(1.06);
+  filter: saturate(1.06);
+}
+
+/* default placeholder silhouette */
+.avatar-placeholder {
+  font-size: 34px;
+  color: #0b5d36;
+  opacity: 0.88;
+}
+
+/* name and info */
+.profile-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #07301a;
+  margin-bottom: 6px;
+}
+.profile-email {
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+.profile-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}
+
+/* badges and small action row */
+.profile-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.profile-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.profile-edit {
+  background: linear-gradient(110deg, var(--g1), var(--g2));
+  color: white;
+  box-shadow: 0 8px 18px rgba(4, 57, 32, 0.16);
+}
+.profile-upload {
+  background: #f8fafb;
+  color: #064e3b;
+  border: 1px solid #e6f6ea;
+}
+
+/* small green status dot */
+.profile-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: center;
+}
+.profile-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #34d399;
+  box-shadow: 0 6px 18px rgba(52, 211, 153, 0.12);
+}
+
+/* hidden file input (we provide custom button) */
+.upload-input {
+  display: none;
+}
+
+/* profile card entrance animation */
+@keyframes cardSlideIn {
+  0% { opacity: 0; transform: translateY(18px) scale(.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* gentle float animation for avatar */
+@keyframes avatarFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+/* profile edit modal */
+.profile-edit-bg {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, rgba(0,0,0,0.55), rgba(0,0,0,0.35));
+  z-index: 260;
+  animation: overlayFade 0.22s ease-out;
+}
+.profile-edit-box {
+  width: 96%;
+  max-width: 520px;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow: 0 26px 64px rgba(9, 45, 33, 0.32);
+  animation: softZoomFade 0.28s ease-out;
+}
+
+/* small helper */
+.small-muted { font-size: 12px; color: #6b7280; }
+
+/* responsive tweaks */
+@media (max-width: 960px) {
+  .profile-sticky { position: static; max-width: 100%; margin-top: 8px; }
+  .upcoming-strip { gap: 12px; }
+}
+
+/* tiny animated underline on name */
+.profile-name::after {
+  content: "";
+  display: block;
+  width: 40%;
+  height: 3px;
+  margin: 8px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b3ffd0, #0b5d36);
+  opacity: 0.14;
+  transform-origin: left;
+  animation: pulseUnderline 1.8s ease-in-out infinite;
+}
+@keyframes pulseUnderline {
+  0% { opacity: 0.06; transform: scaleX(.8); }
+  50% { opacity: 0.26; transform: scaleX(1); }
+  100% { opacity: 0.06; transform: scaleX(.8); }
+}
+
+/* small success hint for image upload */
+.upload-success {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #065f46;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+  
+  
+/* ================= MY APPLICATIONS ================= */
+.applications-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.application-card {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #e5f4ea;
+  box-shadow: 0 12px 28px rgba(6, 50, 36, 0.10);
+  transition: 0.25s ease;
+}
+
+.application-card:hover {
+  box-shadow: 0 20px 45px rgba(6, 50, 36, 0.18);
+  transform: translateY(-3px);
+}
+
+.app-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #064e3b;
+  margin-bottom: 6px;
+}
+
+.app-line {
+  font-size: 13px;
+  color: #4b5563;
+  margin: 3px 0;
+}
+
+.btn-pay {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #0b5d36;
+  color: white;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-pay:hover {
+  background: #094528;
+}
+
+.paid-badge {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: #e2f7d6;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+
+
 `;
 
 /* ============================================================
@@ -992,6 +1296,19 @@ export default function App() {
   /* USER PROFILE */
   const [userProfile, setUserProfile] = useState(null);
 
+  /* Profile edit modal & temporary state */
+  const [profileEditOpen, setProfileEditOpen] = useState(false);
+  const [tempProfile, setTempProfile] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    nationality: "",
+    avatar: "", // base64 data
+  });
+  const [avatarFileName, setAvatarFileName] = useState("");
+  const [avatarUploadSuccess, setAvatarUploadSuccess] = useState(false);
+
   /* UPCOMING TRAININGS ANIM FLAG */
   const [trainingsVisible, setTrainingsVisible] = useState(false);
 
@@ -1011,6 +1328,10 @@ export default function App() {
     phone: "",
     notes: "",
   });
+/* USER APPLICATIONS */
+const [applications, setApplications] = useState(
+  JSON.parse(localStorage.getItem("cftri_applications") || "[]")
+);
 
   const updateApplyForm = (field, value) => {
     setApplyForm((prev) => ({ ...prev, [field]: value }));
@@ -1046,6 +1367,7 @@ export default function App() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
   /* SAVE PROFILE */
   const saveProfile = (profile) => {
     setUserProfile(profile);
@@ -1094,6 +1416,9 @@ export default function App() {
           email: data.user?.email || loginEmail,
           phone: data.user?.phone || "",
           lastLogin: new Date().toLocaleString(),
+          avatar: data.user?.avatar || "", // backend may supply avatar
+          address: data.user?.address || "",
+          nationality: data.user?.nationality || "",
         };
 
         saveProfile(profile);
@@ -1225,6 +1550,18 @@ export default function App() {
     }
 
     showToast("Application submitted successfully!", "success");
+    // Save application locally
+const newApp = {
+  course: selectedCourse?.title,
+  date: new Date().toLocaleDateString(),
+  status: "Submitted",
+  payment: "Pending",
+};
+
+const updatedApps = [...applications, newApp];
+setApplications(updatedApps);
+localStorage.setItem("cftri_applications", JSON.stringify(updatedApps));
+
     setApplyOpen(false);
 
   } catch (err) {
@@ -1331,30 +1668,6 @@ export default function App() {
       description:
         "Basics of cell culture, aseptic handling and food research applications.",
     },
-    // {
-    //   title: "Sensory Analysis of Foods",
-    //   duration: "4 Days",
-    //   fee: "₹6,500",
-    //   image: "/images/courses/sensory.jpg",
-    //   description:
-    //     "Sensory panels, profiling techniques and consumer studies.",
-    // },
-    // {
-    //   title: "HPLC for Food Analysis",
-    //   duration: "1 Week",
-    //   fee: "₹18,000",
-    //   image: "/images/courses/hplc.jpg",
-    //   description:
-    //     "HPLC techniques for nutrients and contaminants analysis.",
-    // },
-    // {
-    //   title: "GC Techniques in Food",
-    //   duration: "1 Week",
-    //   fee: "₹18,000",
-    //   image: "/images/courses/gc.jpg",
-    //   description:
-    //     "Gas Chromatography for volatiles and flavor compounds.",
-    // },
     {
       title: "Packaging Technology",
       duration: "1 Week",
@@ -1363,14 +1676,6 @@ export default function App() {
       description:
         "Packaging materials, shelf-life improvement and standards.",
     },
-      // {
-      //   title: "Extraction of Edible Oils & Fats",
-      //   duration: "6 Days",
-      //   fee: "₹11,000",
-      //   image: "/images/courses/oils.jpg",
-      //   description:
-      //     "Oil extraction, refining and quality evaluation.",
-      // },
     {
       title: "Solid Waste & Waste Water Management",
       duration: "5 Days",
@@ -1396,6 +1701,103 @@ export default function App() {
         "Processing, preservation and quality control of meat products.",
     },
   ];
+
+  /* ------------------ PROFILE EDIT / UPLOAD HELPERS ------------------ */
+
+  // open edit modal and prefill tempProfile
+  const openProfileEdit = () => {
+    setTempProfile({
+      name: userProfile?.name || "",
+      email: userProfile?.email || "",
+      phone: userProfile?.phone || "",
+      address: userProfile?.address || "",
+      nationality: userProfile?.nationality || "",
+      avatar: userProfile?.avatar || "",
+    });
+    setAvatarUploadSuccess(false);
+    setProfileEditOpen(true);
+  };
+
+  // handle avatar file selection, convert to base64 and store in tempProfile
+ const handleAvatarChange = (e) => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+
+  const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!allowed.includes(f.type)) {
+    showToast("Please upload a PNG / JPG / WEBP image.", "error");
+    return;
+  }
+
+  setAvatarFileName(f.name);
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const b64 = ev.target.result;
+
+    // Update temp modal preview
+    setTempProfile((prev) => ({ ...prev, avatar: b64 }));
+
+    // Update actual active profile
+    const updated = { ...userProfile, avatar: b64 };
+    setUserProfile(updated);
+    localStorage.setItem("cftri_user_profile", JSON.stringify(updated));
+
+    setAvatarUploadSuccess(true);
+    showToast("Photo updated successfully!", "success");
+  };
+
+  reader.onerror = () => showToast("Failed to read file.", "error");
+
+  reader.readAsDataURL(f);
+};
+
+  // save edits to localStorage and userProfile
+  const saveProfileEdits = () => {
+  if (!tempProfile.name || !tempProfile.email) {
+    showToast("Please provide name and email.", "error");
+    return;
+  }
+
+  const updated = {
+    ...userProfile,
+    name: tempProfile.name,
+    email: tempProfile.email,
+    phone: tempProfile.phone,
+    address: tempProfile.address,
+    nationality: tempProfile.nationality,
+    avatar: tempProfile.avatar,   // 🔥 important
+    lastLogin: new Date().toLocaleString(),
+  };
+
+  setUserProfile(updated);
+  localStorage.setItem("cftri_user_profile", JSON.stringify(updated));
+
+  showToast("Profile saved successfully.", "success");
+  setProfileEditOpen(false);
+};
+
+  // quick remove avatar
+ const removeAvatar = () => {
+  setTempProfile((prev) => ({ ...prev, avatar: "" }));
+
+  const updated = { ...userProfile, avatar: "" };
+  setUserProfile(updated);
+  localStorage.setItem("cftri_user_profile", JSON.stringify(updated));
+
+  setAvatarFileName("");
+  setAvatarUploadSuccess(false);
+
+  showToast("Photo removed.", "success");
+};
+const markPaymentDone = (index) => {
+  const updated = [...applications];
+  updated[index].payment = "Completed";
+  setApplications(updated);
+  localStorage.setItem("cftri_applications", JSON.stringify(updated));
+  showToast("Payment completed successfully!", "success");
+};
+
   /* ============================================================
       JSX START
   ============================================================= */
@@ -1427,7 +1829,7 @@ export default function App() {
       <header className="navbar-stc">
         <div className="navbar-inner">
           <div className="navbar-left">
-            <img src="/images/logo1.png" className="navbar-logo" alt="logo" />
+            <img src="/images/logo1.jpg" className="navbar-logo" alt="logo" />
             <div className="navbar-titles">
               <div className="navbar-title-top">
                 CSIR – Central Food Technological Research Institute, Mysuru
@@ -1489,7 +1891,7 @@ export default function App() {
 
             <div className="navbar-right">
               {userProfile ? (
-                <div className="navbar-hello">
+                <div className="navbar-hello name"  >
                   Hello, <strong>{userProfile.name}</strong>
                 </div>
               ) : null}
@@ -1531,7 +1933,7 @@ export default function App() {
               </div>
 
               <h1 className="hero-title">
-                CFTRI Certified Short Term Training Courses in Food Science &
+                CFTRI Certified Short Term Training Courses in Food Science &amp;
                 Technology
               </h1>
 
@@ -1606,38 +2008,170 @@ export default function App() {
         </section>
       </main>
 
-      {/* ================= UPCOMING TRAININGS ================= */}
+      {/* ================= UPCOMING TRAININGS (WITH PROFILE ON RIGHT) ================= */}
       <section className="section-shell fade" id="schedule-section">
         <div className="upcoming-strip">
           <div>
             <div className="upcoming-pill">Upcoming Trainings</div>
 
-            <div className="upcoming-list">
-              {upcomingTrainings.map((t, i) => (
-                <div
-                  key={i}
-                  className={`upcoming-card ${trainingsVisible ? "show" : ""}`}
-                  style={{ transitionDelay: `${i * 120}ms` }}
-                >
-                  <div className="upcoming-title">{t.title}</div>
-                  <div className="upcoming-meta">Starts: {t.dates}</div>
-                  <div className="upcoming-chip">Mode: {t.mode}</div>
-                </div>
-              ))}
-            </div>
+<div className="upcoming-list">
+  <div className="ticker-wrapper">
+    {[...upcomingTrainings, ...upcomingTrainings].map((t, i) => (
+      <div key={i} className="upcoming-card show">
+        <div className="upcoming-title">{t.title}</div>
+        <div className="upcoming-meta">Starts: {t.dates}</div>
+        <div className="upcoming-chip">Mode: {t.mode}</div>
+      </div>
+    ))}
+  </div>
+</div>
+{/* ================= MY APPLICATIONS SECTION ================= */}
+<section className="section-shell fade">
+  <h2 className="section-heading">My Applications</h2>
+  <p className="section-subtitle">
+    View your submitted training applications and payment status.
+  </p>
+
+  {applications.length === 0 ? (
+    <div className="card-stc" style={{ textAlign: "center", padding: "20px" }}>
+      <p className="text-sm text-gray-600">
+        You have not applied for any courses yet.
+      </p>
+    </div>
+  ) : (
+    <div className="applications-list">
+      {applications.map((app, i) => (
+        <div className="application-card" key={i}>
+          <div className="app-title">{app.course}</div>
+          <div className="app-line"><strong>Applied on:</strong> {app.date}</div>
+          <div className="app-line"><strong>Application Status:</strong> {app.status}</div>
+          <div className="app-line"><strong>Payment:</strong> {app.payment}</div>
+
+          {app.payment === "Pending" && (
+            <button 
+              className="btn-pay"
+              onClick={() => markPaymentDone(i)}
+            >
+              Complete Payment
+            </button>
+          )}
+
+          {app.payment === "Completed" && (
+            <div className="paid-badge">✔ Payment Completed</div>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
           </div>
 
-          <div>
-            <button
-              className="btn-schedule"
-              onClick={() =>
-                document.getElementById("courses-section")?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              View Full Schedule →
-            </button>
+          {/* RIGHT: Schedule button + Profile Card (Option A) */}
+          <div className="profile-shell">
+            <div className="profile-sticky">
+              {/* Schedule CTA (keeps original) */}
+              <div style={{
+  display: "flex",
+  justifyContent: "flex-end",
+  marginBottom: 10,
+  marginTop: -6   // ⭐ pulls button upward
+}}>
+
+                <button
+                  className="btn-schedule"
+                  onClick={() =>
+                    document.getElementById("courses-section")?.scrollIntoView({
+                      behavior: "smooth",
+                    })
+                  }
+                >
+                  View Full Schedule →
+                </button>
+              </div>
+
+              {/* Profile card inserted here */}
+              <div className="profile-card">
+                {userProfile ? (
+                  <>
+                    <div className="profile-avatar" title="Profile photo">
+                      {userProfile.avatar ? (
+                        <img src={userProfile.avatar} alt="avatar" />
+                      ) : (
+                        <div className="avatar-placeholder">👤</div>
+                      )}
+                    </div>
+
+                    <div className="profile-name">{userProfile.name}</div>
+                    <div className="profile-email">{userProfile.email}</div>
+
+                    <div className="profile-meta">
+                      {userProfile.phone ? <div>📞 {userProfile.phone}</div> : null}
+                      <div style={{ marginTop: 6 }}>
+                        <span className="small-muted">Last login:</span>{" "}
+                        <span className="small-muted" style={{ fontWeight: 700 }}>
+                          {userProfile.lastLogin || "—"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="profile-status">
+                      <div className="profile-status-dot" />
+                      <div className="small-muted">Active Participant</div>
+                    </div>
+
+                    <div className="profile-actions">
+                      <button className="profile-btn profile-edit" onClick={openProfileEdit}>
+                        Edit Profile
+                      </button>
+
+                      <label style={{ margin: 0 }}>
+                        <input
+                          className="upload-input"
+                          id="inline-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                        />
+                        <button
+                          type="button"
+                          className="profile-btn profile-upload"
+                          onClick={() => document.getElementById("inline-upload")?.click()}
+                        >
+                          Upload Photo
+                        </button>
+                      </label>
+                    </div>
+
+                    {avatarFileName && (
+                      <div className="upload-success">
+                        ✔ {avatarFileName} ready. Save from Edit.
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div style={{ padding: "18px 8px" }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#064e3b" }}>
+                        Welcome!
+                      </div>
+                      <p className="small-muted" style={{ marginTop: 8 }}>
+                        Sign in or create an account to apply for trainings and manage your applications.
+                      </p>
+
+                      <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center" }}>
+                        <button className="profile-btn profile-edit" onClick={openLogin}>
+                          Sign In
+                        </button>
+                        <button className="profile-btn profile-upload" onClick={openRegister}>
+                          Register
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1716,6 +2250,7 @@ export default function App() {
           ))}
         </div>
       </section>
+
       {/* ================= APPLY MODAL ================= */}
       {applyOpen && (
         <div className="apply-bg">
@@ -1996,6 +2531,80 @@ export default function App() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= PROFILE EDIT MODAL (NEW) ================= */}
+      {profileEditOpen && (
+        <div className="profile-edit-bg">
+          <div className="profile-edit-box">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0 }}>Edit Profile</h3>
+              <button onClick={() => setProfileEditOpen(false)} style={{ border: "none", background: "#f3f4f6", borderRadius: 8, padding: 6, cursor: "pointer" }}>
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 12, marginTop: 14 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ width: 96, height: 96, margin: "0 auto", borderRadius: 999, overflow: "hidden", border: "4px solid rgba(6,78,59,0.06)", boxShadow: "0 10px 30px rgba(6,70,46,0.06)" }}>
+                  {tempProfile.avatar ? (
+                    <img src={tempProfile.avatar} alt="preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, color: "#064e3b" }}>👤</div>
+                  )}
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <label style={{ cursor: "pointer" }}>
+                    <input className="upload-input" type="file" accept="image/*" onChange={handleAvatarChange} />
+                    <button className="profile-btn profile-upload">Choose Photo</button>
+                  </label>
+
+                  {tempProfile.avatar && (
+                    <button style={{ marginLeft: 8 }} className="profile-btn profile-edit" onClick={removeAvatar}>Remove</button>
+                  )}
+                </div>
+
+                {avatarUploadSuccess && <div style={{ marginTop: 8 }} className="small-muted">Preview ready — save to keep.</div>}
+              </div>
+
+              <div>
+                <div style={{ display: "grid", gap: 8 }}>
+                  <div>
+                    <div className="label-sm">Name *</div>
+                    <input className="input-field" value={tempProfile.name} onChange={(e) => setTempProfile((p)=>({...p, name: e.target.value}))} />
+                  </div>
+
+                  <div>
+                    <div className="label-sm">Email *</div>
+                    <input className="input-field" value={tempProfile.email} onChange={(e) => setTempProfile((p)=>({...p, email: e.target.value}))} />
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    <div>
+                      <div className="label-sm">Phone</div>
+                      <input className="input-field" value={tempProfile.phone} onChange={(e) => setTempProfile((p)=>({...p, phone: e.target.value}))} />
+                    </div>
+                    <div>
+                      <div className="label-sm">Nationality</div>
+                      <input className="input-field" value={tempProfile.nationality} onChange={(e) => setTempProfile((p)=>({...p, nationality: e.target.value}))} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="label-sm">Address</div>
+                    <input className="input-field" value={tempProfile.address} onChange={(e) => setTempProfile((p)=>({...p, address: e.target.value}))} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 14, display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button className="btn-apply" onClick={saveProfileEdits}>Save Profile</button>
+              <button style={{ background: "#f3f4f6", border: "1px solid #e6e6e6", padding: "8px 12px", borderRadius: 8 }} onClick={() => setProfileEditOpen(false)}>Cancel</button>
             </div>
           </div>
         </div>
