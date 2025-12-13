@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+  import React, { useEffect, useState } from "react";
 
 /* ============================================================
    GLOBAL CSS – injected once into <head>
@@ -29,6 +29,164 @@ body {
   background-attachment: fixed;
   color: #052016;
 }
+
+
+
+
+/* ================= CAMPUS SLIDESHOW ================= */
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}   
+.slide img {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+  display: block;
+}
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  height: 360px;   /* 🔥 fixes jump & gap */
+  overflow: hidden;
+}
+@media (max-width: 640px) {
+  .slideshow-container {
+    height: 220px;
+  }
+}
+
+/* Fade animation */
+@keyframes slideFade {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Prev & Next buttons */
+.slide-prev,
+.slide-next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  padding: 10px 12px;
+  margin-top: -22px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  background: rgba(0,0,0,0.35);
+  border-radius: 999px;
+  user-select: none;
+  transition: background 0.3s;
+   backdrop-filter: blur(6px);
+}
+
+.slide-next {
+  right: 12px;
+}
+
+.slide-prev {
+  left: 12px;
+}
+
+.slide-prev:hover,
+.slide-next:hover {
+  background: rgba(0,0,0,0.75);
+}
+
+/* Caption */
+.slide-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(
+    transparent,
+    rgba(0,0,0,0.55)
+  );
+  padding: 8px 12px;
+}
+
+/* Dots */
+.slide-dots {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 3;
+}
+.slideshow-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05) 0%,
+    rgba(0,0,0,0.25) 55%,
+    rgba(0,0,0,0.55) 100%
+  );
+  pointer-events: none;
+}
+
+.slide-dot {
+  cursor: pointer;
+ height: 8px;
+  width: 8px;
+   margin: 0 5px;
+  background-color: rgba(255,255,255,0.6);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.25);
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.4s ease;
+}
+
+.slide-dot.active,
+.slide-dot:hover {
+  background-color: #0a5132;
+}
+.slide-dot.active {
+  background-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.45);
+}
+/* Mobile */
+@media (max-width: 640px) {
+  .slide img {
+    height: 220px;
+  }
+}
+
+
+
+
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
 
 /* FLOATING GLOWS */
 .floating-bg {
@@ -62,6 +220,80 @@ body {
   opacity: 1;
   transform: none;
 }
+
+
+/* ================= SPLASH SCREEN ================= */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #064e3b, #0c8f54);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  animation: splashFadeOut 0.8s ease forwards;
+  animation-delay: 2.6s;
+}
+
+.splash-inner {
+  text-align: center;
+  color: #ecfdf5;
+  animation: splashReveal 1.4s cubic-bezier(.2,.9,.3,1);
+}
+/* LOGO IMAGE */
+.splash-logo {
+ width:500px;
+  object-fit: contain;
+  
+}
+.splash-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.splash-sub {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+@keyframes splashZoom {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes logoPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes splashFadeOut {
+  to {
+    opacity: 0;
+    transform: scale(1.05);
+    visibility: hidden;
+  }
+}
+@keyframes splashReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+@keyframes logoFloat {
+  0%   { transform: translateY(0) scale(1); }
+  50%  { transform: translateY(-10px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+
 
 /* --------- SOFT ZOOM SPLASH FOR MODALS --------- */
 @keyframes softZoomFade {
@@ -209,14 +441,14 @@ body {
   gap: 10px;
 }
 .navbar-logo {
-  width: 80px;
-  height: 50px;
-  border-radius: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   background: #ffffff;
-  padding: 5px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  padding: 6px;
   object-fit: contain;
 }
+
 .navbar-titles {
   display: flex;
   flex-direction: column;
@@ -635,6 +867,62 @@ body {
   font-size: 13px;
   cursor: pointer;
 }
+/* ===== ABOUT CONFERENCE SECTION ===== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.about-image-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.about-image {
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 22px 50px rgba(5,40,25,0.28);
+  background: #fff;
+  padding: 6px;
+}
+
+.about-heading {
+  font-size: 28px;
+  font-weight: 800;
+  color: #052016;
+  margin-bottom: 10px;
+}
+
+.about-heading span {
+  color: #f97316; /* orange accent like reference */
+  font-style: italic;
+  font-weight: 700;
+}
+
+.about-divider {
+  width: 46px;
+  height: 3px;
+  background: #f97316;
+  border-radius: 999px;
+  margin: 10px 0 16px;
+}
+
+.about-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #4b5563;
+}
 
 /* ABOUT SECTION */
 .section-heading {
@@ -650,6 +938,169 @@ body {
   color: #374151;
   max-width: 720px;
   margin: 0 auto 18px;
+}
+/* ===== ENHANCED ABOUT SECTION ===== */
+.about-wrap {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 36px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .about-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* LEFT IMAGE PANEL */
+.about-visual {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 22px 55px rgba(5, 40, 25, 0.28);
+}
+.about-visual {
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.about-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: radial-gradient(circle at center, rgba(34,197,94,0.35), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.about-visual:hover {
+  transform: scale(1.04);
+  box-shadow: 0 30px 70px rgba(6, 78, 59, 0.45);
+}
+
+.about-visual:hover::after {
+  opacity: 1;
+}
+
+.about-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* overlay badge */
+.about-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(6,78,59,0.92);
+  color: #ecfdf5;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* RIGHT CONTENT */
+.about-content {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 22px 22px 24px;
+  box-shadow: 0 18px 45px rgba(15, 50, 30, 0.10);
+}
+
+/* STATS */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px;
+  margin: 14px 0 18px;
+}
+
+@media (max-width: 640px) {
+  .about-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.about-stat {
+  background: linear-gradient(135deg,#f0fdf4,#e7f9ef);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.about-stat:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 18px 40px rgba(6, 78, 59, 0.28);
+}
+
+
+.about-stat strong {
+  font-size: 18px;
+  color: #064e3b;
+  display: block;
+}
+
+.about-stat span {
+  font-size: 11px;
+  color: #4b5563;
+}
+
+/* OBJECTIVES CARDS */
+.objectives-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .objectives-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.objective-card {
+  background: #f7fbf2;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  position: relative;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.objective-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.0);
+  transition: box-shadow 0.35s ease;
+}
+
+.objective-card:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 16px 36px rgba(6,50,36,0.18);
+}
+
+.objective-card:hover::after {
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.45);
+}
+
+.objectives-grid .objective-card:nth-child(1) { transition-delay: 0s; }
+.objectives-grid .objective-card:nth-child(2) { transition-delay: 0.05s; }
+.objectives-grid .objective-card:nth-child(3) { transition-delay: 0.1s; }
+.objectives-grid .objective-card:nth-child(4) { transition-delay: 0.15s; }
+
+.objective-icon {
+  font-size: 18px;
 }
 
 /* GENERIC CARD */
@@ -681,8 +1132,9 @@ body {
 .campus-shell {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 8px 18px 32px;
+  padding: 8px 18px 12px; /* 🔥 reduced bottom space */
 }
+
 .campus-frame {
   border-radius: 26px;
   overflow: hidden;
@@ -1251,12 +1703,238 @@ body {
 
 
 
+
+
+
+
+
+/* ================= ENHANCED MICRO-ANIMATIONS ================= */
+
+/* smooth page feel */
+html {
+  scroll-behavior: smooth;
+}
+
+/* NAVBAR DROP */
+.navbar-stc {
+  animation: navDrop 0.6s ease-out;
+}
+@keyframes navDrop {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+/* BUTTON LIFT + RIPPLE */
+button {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+button:hover {
+  transform: translateY(-2px);
+}
+button::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 999px;
+  transform: scale(0);
+}
+button:active::after {
+  animation: ripple 0.6s ease-out;
+}
+@keyframes ripple {
+  from { transform: scale(0); opacity: 0.5; }
+  to { transform: scale(18); opacity: 0; }
+}
+
+/* HERO REVEAL */
+.hero-shell {
+  animation: heroReveal 0.9s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* CARD DEPTH CONSISTENCY */
+.card-stc,
+.course-card,
+.profile-card,
+.application-card,
+.participant-panel {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.card-stc:hover,
+.application-card:hover,
+.participant-panel:hover {
+  transform: translateY(-4px);
+}
+
+/* COURSE IMAGE PARALLAX */
+.course-img {
+  transition: transform 0.6s cubic-bezier(.2,.9,.3,1);
+}
+.course-card:hover .course-img {
+  transform: scale(1.08);
+}
+
+/* PROFILE AVATAR FLOAT */
+.profile-avatar {
+  animation: avatarFloat 3.6s ease-in-out infinite;
+}
+@keyframes avatarFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+
+
+
+@media (max-width: 640px) {
+ .splash-logo-wrap {
+  width: min(60vw, 180px);
+  height: min(60vw, 180px);
+}
+  .splash-title {
+    font-size: 16px;
+  }
+
+  .splash-sub {
+    font-size: 11px;
+  }
+}
+
+
+
+
+/* ================= FLOATING CONTACT SIDE PANEL ================= */
+
+.contact-panel {
+  position: fixed;
+  top: 50%;
+  right: -260px;
+  transform: translateY(-50%);
+  width: 260px;
+  background: linear-gradient(180deg, #0a5132, #064e3b);
+  color: #eafff4;
+  border-radius: 16px 0 0 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  transition: right 0.45s cubic-bezier(.2,.9,.3,1);
+  z-index: 200;
+}
+
+.contact-panel.open {
+  right: 0;
+}
+
+/* Toggle button */
+.contact-toggle {
+  position: absolute;
+  left: -44px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 70px;
+  border-radius: 12px 0 0 12px;
+  background: #0c8f54;
+  color: white;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.3);
+}
+
+/* Panel content */
+.contact-panel-inner {
+  padding: 16px 18px;
+}
+
+.contact-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 6px;
+}
+
+.contact-item {
+  font-size: 13px;
+  margin: 6px 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.contact-item a {
+  color: #d1fae5;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+/* Get in touch buttons */
+.contact-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.contact-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  background: #ffffff;
+  color: #064e3b;
+}
+
+.contact-btn.whatsapp {
+  background: #25D366;
+  color: #07301a;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .contact-panel {
+    width: 230px;
+  }
+}
+
+
+
+
+
+
 `;
 
 /* ============================================================
    MAIN APP COMPONENT
 ============================================================ */
-export default function App() {
+export default function App() {  /* TABLE CELL STYLES (for schedule table) */
+  const th = {
+    padding: "10px",
+    fontSize: "13px",
+    color: "#064e3b",
+    whiteSpace: "nowrap",
+  };
+
+  const td = {
+    padding: "10px",
+    fontSize: "13px",
+    color: "#374151",
+    verticalAlign: "top",
+  };
+
   // inject CSS once
   useEffect(() => {
     const style = document.createElement("style");
@@ -1280,6 +1958,49 @@ export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [navOpen, setNavOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+
+  /* CAMPUS SLIDESHOW */
+const campusSlides = [
+  {
+    img: "/images/Mansion_pic.jpg",
+    caption: "CSIR–CFTRI Main Campus, Mysuru",
+  },
+  {
+    img: "/images/banner1.jpg",
+    caption: "CFTRI Research & Training Facilities",
+  },
+  // {
+  //   img: "/images/logo1.jpg",
+  //   caption: "OUR NEW LOGO",
+  // },
+];
+
+const [slideIndex, setSlideIndex] = useState(0);
+
+/* Auto play (optional) */
+useEffect(() => {
+  const interval = setInterval(() => {
+    setSlideIndex((prev) =>
+      prev === campusSlides.length - 1 ? 0 : prev + 1
+    );
+  }, 4000); // 4 seconds
+
+  return () => clearInterval(interval);
+}, []);
+
+
+/* SPLASH SCREEN */
+const [showSplash, setShowSplash] = useState(true);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setShowSplash(false);
+  }, 3000); // 3 seconds splash
+
+  return () => clearTimeout(timer);
+}, []);
+
 
   /* LOGIN / REGISTER STATES */
   const [loginEmail, setLoginEmail] = useState("");
@@ -1601,6 +2322,99 @@ localStorage.setItem("cftri_applications", JSON.stringify(updatedApps));
       code: "STC-04",
     },
   ];
+/* ================= FULL TRAINING SCHEDULE (STATIC – 2025) ================= */
+const fullSchedule = [
+  {
+    code: "STCH-01",
+    title: "Training Programme on Fruits and Vegetable Products",
+    dates: "15-04-2025 to 17-04-2025",
+    duration: "3 Days",
+    centre: "Hyderabad",
+  },
+  {
+    code: "STCL-02",
+    title: "Training Programme on Fruits & Vegetables Processing (Batch 1)",
+    dates: "22-04-2025 to 24-04-2025",
+    duration: "3 Days",
+    centre: "Lucknow",
+  },
+  {
+    code: "STC-06",
+    title:
+      "Fumigation, Prophylaxis and Pest Management Technique for Stored Food Commodities (Batch 1)",
+    dates: "16-05-2025 to 30-05-2025",
+    duration: "15 Days",
+    centre: "CFTRI",
+  },
+  {
+    code: "STCH-11",
+    title: "Training Programme on Millet Products",
+    dates: "11-06-2025 to 13-06-2025",
+    duration: "3 Days",
+    centre: "Hyderabad",
+  },
+  {
+    code: "STC-12",
+    title:
+      "Integrated Solid Waste & Wastewater Management in the Food Industry",
+    dates: "16-06-2025 to 20-06-2025",
+    duration: "5 Days",
+    centre: "CFTRI",
+  },
+  {
+    code: "STC-21",
+    title: "Spices Processing and Value Addition",
+    dates: "04-08-2025 to 08-08-2025",
+    duration: "5 Days",
+    centre: "CFTRI",
+  },
+  {
+    code: "STC-24",
+    title: "Baking Science and Technology",
+    dates: "18-08-2025 to 22-08-2025",
+    duration: "5 Days",
+    centre: "CFTRI",
+  },
+  {
+    code: "STC-30",
+    title: "Training Programme on Grain Processing and Machinery",
+    dates: "10-11-2025 to 14-11-2025",
+    duration: "5 Days",
+    centre: "CFTRI",
+  },
+];
+{/* ================= FULL SCHEDULE TABLE ================= */}
+{/* <div className="card-stc" style={{ marginTop: 20 }}>
+  <h3 className="text-lg font-semibold text-green-900 mb-2">
+    Full Training Schedule – 2025
+  </h3>
+
+  <div style={{ overflowX: "auto" }}>
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <thead>
+        <tr style={{ background: "#e7f9ef", textAlign: "left" }}>
+          <th style={th}>Code</th>
+          <th style={th}>Course Title</th>
+          <th style={th}>Dates</th>
+          <th style={th}>Duration</th>
+          <th style={th}>Centre</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {fullSchedule.map((row, i) => (
+          <tr key={i} style={{ borderBottom: "1px solid #e5f4ea" }}>
+            <td style={td}><strong>{row.code}</strong></td>
+            <td style={td}>{row.title}</td>
+            <td style={td}>{row.dates}</td>
+            <td style={td}>{row.duration}</td>
+            <td style={td}>{row.centre}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div> */}
 
   /* COURSES LIST */
   const courses = [
@@ -1803,6 +2617,29 @@ const markPaymentDone = (index) => {
   ============================================================= */
   return (
     <>
+
+
+    {/* ================= SPLASH SCREEN ================= */}
+{showSplash && (
+  <div className="splash-screen">
+    <div className="splash-inner">
+      <div className="splash-logo-wrap">
+        <img
+          src="/images/logo1.jpg"
+          alt="CFTRI Logo"
+          className="splash-logo"
+        />
+      </div>
+
+      <div className="splash-title">CSIR – CFTRI</div>
+      <div className="splash-sub">
+        Short Term Training Courses Portal
+      </div>
+    </div>
+  </div>
+)}
+
+
       {/* ================= TOASTS ================= */}
       <div className="toast-container">
         {toasts.map((t) => (
@@ -1909,19 +2746,65 @@ const markPaymentDone = (index) => {
           </nav>
         </div>
       </header>
+<section className="campus-shell fade">
+  <div className="campus-frame">
+    <div className="slideshow-container">
 
-      {/* ================= CAMPUS IMAGE ================= */}
-      <section className="campus-shell fade">
-        <div className="campus-frame">
-          <img
-            src="/images/Mansion_pic.jpg"
-            alt="CFTRI Campus"
-            className="campus-img"
-          />
+      {campusSlides.map((s, i) => (
+        <div
+          key={i}
+          className={`slide ${i === slideIndex ? "active" : ""}`}
+        >
+          <img src={s.img} alt={s.caption} />
+          <div className="slide-caption">{s.caption}</div>
         </div>
-      </section>
+      ))}
+
+      {/* Prev / Next */}
+      <span
+        className="slide-prev"
+        onClick={() =>
+          setSlideIndex(
+            slideIndex === 0
+              ? campusSlides.length - 1
+              : slideIndex - 1
+          )
+        }
+      >
+        ❮
+      </span>
+
+      <span
+        className="slide-next"
+        onClick={() =>
+          setSlideIndex(
+            slideIndex === campusSlides.length - 1
+              ? 0
+              : slideIndex + 1
+          )
+        }
+      >
+        ❯
+      </span>
+
+      {/* Dots */}
+      <div className="slide-dots">
+        {campusSlides.map((_, i) => (
+          <span
+            key={i}
+            className={`slide-dot ${i === slideIndex ? "active" : ""}`}
+            onClick={() => setSlideIndex(i)}
+          />
+        ))}
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
       {/* ================= HERO SECTION ================= */}
+      
       <main id="home-section">
         <section className="hero-shell fade">
           <div className="hero-grid">
@@ -2009,7 +2892,7 @@ const markPaymentDone = (index) => {
       </main>
 
       {/* ================= UPCOMING TRAININGS (WITH PROFILE ON RIGHT) ================= */}
-      <section className="section-shell fade" id="schedule-section">
+        <section className="section-shell fade" id="schedule-section">
         <div className="upcoming-strip">
           <div>
             <div className="upcoming-pill">Upcoming Trainings</div>
@@ -2024,46 +2907,39 @@ const markPaymentDone = (index) => {
       </div>
     ))}
   </div>
+</div><div className="card-stc" style={{ marginTop: 20 }}>
+  <h3 className="text-lg font-semibold text-green-900 mb-2">
+    Full Training Schedule – 2025
+  </h3>
+
+  <div style={{ overflowX: "auto" }}>
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <thead>
+        <tr style={{ background: "#e7f9ef", textAlign: "left" }}>
+          <th style={th}>Code</th>
+          <th style={th}>Course Title</th>
+          <th style={th}>Dates</th>
+          <th style={th}>Duration</th>
+          <th style={th}>Centre</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {fullSchedule.map((row, i) => (
+          <tr key={i} style={{ borderBottom: "1px solid #e5f4ea" }}>
+            <td style={td}><strong>{row.code}</strong></td>
+            <td style={td}>{row.title}</td>
+            <td style={td}>{row.dates}</td>
+            <td style={td}>{row.duration}</td>
+            <td style={td}>{row.centre}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 </div>
 {/* ================= MY APPLICATIONS SECTION ================= */}
-<section className="section-shell fade">
-  <h2 className="section-heading">My Applications</h2>
-  <p className="section-subtitle">
-    View your submitted training applications and payment status.
-  </p>
 
-  {applications.length === 0 ? (
-    <div className="card-stc" style={{ textAlign: "center", padding: "20px" }}>
-      <p className="text-sm text-gray-600">
-        You have not applied for any courses yet.
-      </p>
-    </div>
-  ) : (
-    <div className="applications-list">
-      {applications.map((app, i) => (
-        <div className="application-card" key={i}>
-          <div className="app-title">{app.course}</div>
-          <div className="app-line"><strong>Applied on:</strong> {app.date}</div>
-          <div className="app-line"><strong>Application Status:</strong> {app.status}</div>
-          <div className="app-line"><strong>Payment:</strong> {app.payment}</div>
-
-          {app.payment === "Pending" && (
-            <button 
-              className="btn-pay"
-              onClick={() => markPaymentDone(i)}
-            >
-              Complete Payment
-            </button>
-          )}
-
-          {app.payment === "Completed" && (
-            <div className="paid-badge">✔ Payment Completed</div>
-          )}
-        </div>
-      ))}
-    </div>
-  )}
-</section>
 
           </div>
 
@@ -2174,44 +3050,103 @@ const markPaymentDone = (index) => {
             </div>
           </div>
         </div>
+        
       </section>
+<section id="about-section" className="section-shell fade">
+ 
+  <h2 className="section-heading">About CSIR–CFTRI</h2>
 
-      {/* ================= ABOUT US ================= */}
-      <section id="about-section" className="section-shell fade">
-        <h2 className="section-heading">About CFTRI</h2>
-        <p className="section-subtitle">
-          CSIR–CFTRI is a premier research laboratory working in food technology,
-          research, product development and training.
-        </p>
+  <div className="about-wrap">
 
-        <div className="card-stc">
-          <div className="feature-grid">
-            <div>
-              <h3 className="text-lg font-semibold text-green-900 mb-2">R&D</h3>
-              <p className="text-sm text-gray-600">
-                Advanced research in food processing, safety and biotechnology.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-green-900 mb-2">
-                Training
-              </h3>
-              <p className="text-sm text-gray-600">
-                Hands-on training programs for students, faculty and industry
-                professionals.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-green-900 mb-2">
-                Consultancy
-              </h3>
-              <p className="text-sm text-gray-600">
-                Technical consultancy, technology transfer and incubation support.
-              </p>
-            </div>
+    {/* LEFT IMAGE */}
+    <div className="about-visual">
+      <img
+        src="/images/cftri-about-us1.jpg"
+        alt="CSIR–CFTRI Campus"
+      />
+      <div className="about-badge">Established • 1950</div>
+    </div>
+
+    {/* RIGHT CONTENT */}
+    <div className="about-content">
+
+      <p className="text-sm text-gray-700" style={{ lineHeight: "1.8" }}>
+        CSIR–Central Food Technological Research Institute (CFTRI), Mysore, a
+        constituent laboratory of the Council of Scientific and Industrial
+        Research (CSIR), under the Department of Science & Technology,
+        Government of India, is a globally acclaimed R&amp;D organization in
+        the area of food science and technology with innovative and sustainable
+        solutions for national development. The institute came into existence
+        in the year 1950.
+      </p>
+
+      {/* STATS */}
+      <div className="about-stats">
+        <div className="about-stat">
+          <strong>1950</strong>
+          <span>Year Established</span>
+        </div>
+        <div className="about-stat">
+          <strong>Govt. of India</strong>
+          <span>CSIR Laboratory</span>
+        </div>
+        <div className="about-stat">
+          <strong>Global</strong>
+          <span>R&amp;D Recognition</span>
+        </div>
+      </div>
+
+      <h3 className="text-lg font-semibold text-green-900 mb-2">
+        Mission of CSIR Integrated Skill Initiative
+      </h3>
+
+      <p className="text-sm text-gray-700" style={{ lineHeight: "1.8" }}>
+        Generate quality human resources with enhanced employability and
+        entrepreneurial skills through diversified skill-oriented training
+        programs for the food processing sector.
+      </p>
+
+      <h3 className="text-lg font-semibold text-green-900 mt-3 mb-2">
+        Objectives
+      </h3>
+
+      <div className="objectives-grid">
+        <div className="objective-card">
+          <div className="objective-icon"></div>
+          <div className="text-sm">
+            Create a certified talent pool for national manpower needs
           </div>
         </div>
-      </section>
+
+        <div className="objective-card">
+          <div className="objective-icon"></div>
+          <div className="text-sm">
+            Utilize CSIR knowledgebase and infrastructure for skill mission
+          </div>
+        </div>
+
+        <div className="objective-card">
+          <div className="objective-icon"></div>
+          <div className="text-sm">
+            Implement special up-skilling and training programs
+          </div>
+        </div>
+
+        <div className="objective-card">
+          <div className="objective-icon"></div>
+          <div className="text-sm">
+            Align with NSDC and Sector Skill Councils
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
 
       {/* ================= COURSES GRID ================= */}
       <section id="courses-section" className="section-shell fade">
@@ -2616,6 +3551,50 @@ const markPaymentDone = (index) => {
         <br />
         Developed by ITS&CS, CSIR–CFTRI
       </footer>
+{/* ================= FLOATING CONTACT PANEL ================= */}
+<div className={`contact-panel ${contactOpen ? "open" : ""}`}>
+  <button
+    className="contact-toggle"
+    onClick={() => setContactOpen(!contactOpen)}
+    title="Contact Us"
+  >
+     📞✉ 
+  </button>
+
+  <div className="contact-panel-inner">
+    <div className="contact-title">Contact Us</div>
+
+    <div className="contact-item">
+      📞 <a href="tel:08212514310">0821-2514310</a>
+    </div>
+
+    <div className="contact-item">
+      ✉ <a href="mailto:stc@cftri.res.in">stc@cftri.res.in</a>
+    </div>
+
+    <div className="contact-title" style={{ marginTop: 10 }}>
+      Get in Touch
+    </div>
+
+    <div className="contact-actions">
+      {/* <a
+        className="contact-btn whatsapp"
+        href="https://wa.me/918212514310"
+        target="_blank"
+        rel="noreferrer"
+      >
+       WHATSUPP
+      </a>
+
+      <a
+        className="contact-btn"
+        href="mailto:stc@cftri.res.in"
+      >
+        CONTACT US.....
+      </a> */}
+    </div>
+  </div>
+</div>
 
       {/* ================= SCROLL TOP ================= */}
       {showTopBtn && (
